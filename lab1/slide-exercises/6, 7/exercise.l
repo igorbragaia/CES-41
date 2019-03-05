@@ -10,6 +10,7 @@
 #define   CHAR    8
 #define   STRING  9
 #define   INVAL   10
+#define   COMMENT 11
 #define 	LT 	   	1
 #define 	LE   	 	2
 #define	  GT  		3
@@ -22,6 +23,7 @@ union {
   float valreal;
 	char carac;
 } yylval;
+void comentario();
 %}
 delim		[ \t\n\r]
 ws			{delim}+
@@ -30,9 +32,10 @@ letra		[A-Za-z]
 ctint		{digito}+
 id			{letra}({letra}|{digito})*
 ctreal  {digito}+\.{digito}*([Ee][+-]?{digito}+)
-char    '\\?.'
-string  "{char}*"
+char    '\\.|[^\\']'
+string  \"(\\.|[^\\\"])*\"
 %%
+"\*"    {comentario();}
 {ws}		{ ;}
 else		{return ELSE;}
 if			{return IF;}
@@ -60,6 +63,28 @@ while		{return WHILE;}
 "!="		{yylval.atr = NE; return OPREL;}
 .	    	{yylval.carac = yytext[0]; return INVAL;}
 %%
+
+void comentario () {
+	char c;  int estado;
+	estado = 1;
+	printf("Comentario:\n/*");
+	while (estado != 3) {
+		c = input ();
+		printf("%c", c);
+		switch (estado) {
+			case 1:
+				if (c == EOF) estado = 3;
+				else if (c == '*') estado = 2;
+				break;
+			case 2:
+				if (c == EOF || c == '/') estado = 3;
+				else if(c != EOF && c != '/' && c != '*') estado = 1;
+				break;
+		}
+	}
+	printf("\n");
+}
+
 main () {
 	int i;
 	printf ("\n   texto  |   tipo   | atributo \n");

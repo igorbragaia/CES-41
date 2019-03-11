@@ -1,0 +1,10 @@
+1                   : Rejeitada
+11                  : Rejeitada
+111                 : Rejeitada
+1111                : Rejeitada
+11111               : Aceita
+111101              : Aceita
+1110011001          : Rejeitada
+111001101           : Rejeitada
+101101101           : Aceita
+101101101101101101  : Aceita

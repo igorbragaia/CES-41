@@ -1,0 +1,13 @@
+10                  : Rejeitada
+00                  : Aceita
+11                  : Aceita
+000                 : Aceita
+100001              : Aceita
+1000011             : Aceita
+0111100             : Aceita
+10000110            : Rejeitada
+01111001            : Rejeitada
+10000111            : Aceita
+0111101010          : Aceita
+1000011010          : Aceita
+01110100            : Aceita

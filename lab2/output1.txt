@@ -1,0 +1,156 @@
+
+          texto|           tipo|       atributo
+--------------------------------
+Comentario:
+/*  Modulo principal  */
+           main|             14|
+              {|             40|
+          local|             12|
+              :|             44|
+            int|             11|
+              i|             23|              i
+              ,|             43|
+          posic|             23|          posic
+              ;|             42|
+           char|              2|
+              c|             23|              c
+              ;|             42|
+          logic|             13|
+            fim|             23|            fim
+              ;|             42|
+     statements|             18|
+              :|             44|
+           ntab|             23|           ntab
+             <-|             35|
+              0|             24|              0
+              ;|             42|
+          write|             22|
+              (|             36|
+Nova palavra? (s/n): |             27|Nova palavra? (s/n): 
+              )|             37|
+              ;|             42|
+           read|             16|
+              (|             36|
+              c|             23|              c
+              )|             37|
+              ;|             42|
+          while|             21|
+              (|             36|
+              c|             23|              c
+              =|             32|              5
+            's'|             25|            's'
+             |||             29|
+              c|             23|              c
+              =|             32|              5
+            'S'|             25|            'S'
+              )|             37|
+              {|             40|
+          write|             22|
+              (|             36|
+\nDigite a palavra: |             27|\nDigite a palavra: 
+              )|             37|
+              ;|             42|
+            fim|             23|            fim
+             <-|             35|
+          false|              5|
+              ;|             42|
+            for|              7|
+              (|             36|
+              i|             23|              i
+             <-|             35|
+              0|             24|              0
+              ;|             42|
+              !|             31|
+            fim|             23|            fim
+              ;|             42|
+              i|             23|              i
+             <-|             35|
+              i|             23|              i
+              +|             33|              1
+              1|             24|              1
+              )|             37|
+              {|             40|
+           read|             16|
+              (|             36|
+        palavra|             23|        palavra
+              [|             38|
+              i|             23|              i
+              ]|             39|
+              )|             37|
+              ;|             42|
+             if|             10|
+              (|             36|
+        palavra|             23|        palavra
+              [|             38|
+              i|             23|              i
+              ]|             39|
+              =|             32|              5
+           '\n'|             25|           '\n'
+              )|             37|
+              {|             40|
+            fim|             23|            fim
+             <-|             35|
+           true|             19|
+              ;|             42|
+        palavra|             23|        palavra
+              [|             38|
+              i|             23|              i
+              ]|             39|
+             <-|             35|
+           '\0'|             25|           '\0'
+              ;|             42|
+              }|             41|
+              }|             41|
+          posic|             23|          posic
+             <-|             35|
+        Procura|             23|        Procura
+              (|             36|
+              )|             37|
+              ;|             42|
+             if|             10|
+              (|             36|
+          posic|             23|          posic
+              >|             32|              3
+              0|             24|              0
+              )|             37|
+         nocorr|             23|         nocorr
+              [|             38|
+          posic|             23|          posic
+              ]|             39|
+             <-|             35|
+         nocorr|             23|         nocorr
+              [|             38|
+          posic|             23|          posic
+              ]|             39|
+              +|             33|              1
+              1|             24|              1
+              ;|             42|
+           else|              4|
+           call|              1|
+        Inserir|             23|        Inserir
+              (|             36|
+              ~|             35|
+          posic|             23|          posic
+              ,|             43|
+              i|             23|              i
+              )|             37|
+              ;|             42|
+          write|             22|
+              (|             36|
+\n\nNova palavra? (s/n): |             27|\n\nNova palavra? (s/n): 
+              )|             37|
+              ;|             42|
+           read|             16|
+              (|             36|
+              c|             23|              c
+              )|             37|
+              ;|             42|
+              }|             41|
+           call|              1|
+   ExibirTabela|             23|   ExibirTabela
+              (|             36|
+              )|             37|
+              ;|             42|
+              }|             41|
+Comentario:
+/* Fim da funcao main */

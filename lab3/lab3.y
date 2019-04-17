@@ -110,7 +110,7 @@ WhileStat   	:	WHILE {printf("while");} OPPAR {printf("\(");}  Expression  CLPAR
 DoStat  		:   	DO  Statement  WHILE  OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  					SCOLON {printf(";\n");}
 ForStat	    	:   	FOR {printf("for");} OPPAR {printf("\(");}  Variable  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";");}
 			Expression  SCOLON {printf(";");}  Variable  ASSIGN {printf("<-");}  Expression
-			CLPAR {printf("\)");} {tab++;}  Statement  {tab--;}
+			CLPAR {printf("\)");} Statement
 ReadStat   	:   	READ {printf("read");}  OPPAR {printf("\(");}  ReadList  CLPAR {printf("\)");}  SCOLON {printf(";\n");}
 ReadList		:   	Variable  |  ReadList {printf("read");}  COMMA {printf(", ");}  Variable
 WriteStat   	:	WRITE {printf("write");}  OPPAR {printf("\(");}  WriteList  CLPAR {printf("\)");}  SCOLON {printf(";\n");}

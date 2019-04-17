@@ -101,16 +101,16 @@ LocDecls		:   	    |   LOCAL {printf("local ");tab++;}  COLON {printf(":\n");}  
 Stats       	:   	STATEMENTS {printf("statements");}  COLON {printf(":\n");tab++;}   StatList {tab--;}
 StatList		:	   |  StatList  Statement
 Statement   	:   	CompStat  | {tabular();} IfStat  | {tabular();}  WhileStat  |  {tabular();} DoStat
-            	|   	{tabular();} ForStat  |  {tabular();} ReadStat  |  {tabular();} WriteStat  |  {printf("\n");tab++;tabular();tab--;} AssignStat
+            	|   	{tabular();} ForStat  |  {tabular();} ReadStat  |  {tabular();} WriteStat  |  {tabular();} AssignStat
             	|   	{tabular();} CallStat  |  {tabular();} ReturnStat  |  SCOLON {printf(";\n");}
-CompStat		:   	OPBRACE {printf("\n");tabular();printf("\{\n");} {tab++;}StatList{tab--;}  CLBRACE {tabular();printf("\}\n");}
+CompStat		:   	OPBRACE {printf("\{\n");} {tab++;}StatList{tab--;}  CLBRACE {tabular();printf("\}\n");}
 IfStat		:   	IF {printf("if");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");} Statement ElseStat
 ElseStat		:	   |  ELSE  {tab++;}Statement{tab--;}
 WhileStat   	:	WHILE {printf("while");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  Statement
 DoStat  		:   	DO  Statement  WHILE  OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  					SCOLON {printf(";\n");}
 ForStat	    	:   	FOR {printf("for");} OPPAR {printf("\(");}  Variable  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";");}
 			Expression  SCOLON {printf(";");}  Variable  ASSIGN {printf("<-");}  Expression
-			CLPAR {printf("\)");} Statement
+			CLPAR {printf("\)");} {tab++;}  Statement  {tab--;}
 ReadStat   	:   	READ {printf("read");}  OPPAR {printf("\(");}  ReadList  CLPAR {printf("\)");}  SCOLON {printf(";\n");}
 ReadList		:   	Variable  |  ReadList {printf("read");}  COMMA {printf(", ");}  Variable
 WriteStat   	:	WRITE {printf("write");}  OPPAR {printf("\(");}  WriteList  CLPAR {printf("\)");}  SCOLON {printf(";\n");}

@@ -81,60 +81,59 @@ static int input();
 %token INVAL
 %token COMMENT
 %%
-Prog			:	PROGRAM {printf("program ");}  ID  OPBRACE  GlobDecls  Functions
-				CLBRACE
-GlobDecls 	:	   |  GLOBAL  COLON  DeclList
+Prog			:	PROGRAM {printf("program ");}  ID OPBRACE {printf("\{\n");} {printf("\{\n");}  GlobDecls  Functions CLBRACE {printf("\}\n");}
+GlobDecls 	:	   |  GLOBAL {printf("global");} COLON {printf(":\n");}  DeclList
 DeclList		:	Declaration  |  DeclList  Declaration
-Declaration 	:	Type  ElemList  SCOLON
-Type			: 	INT  |  FLOAT  |  CHAR  |  LOGIC  |  VOID
-ElemList    	:	Elem  |  ElemList  COMMA  Elem
-Elem        	:	ID  Dims
-Dims			:	   |  OPBRAK  DimList  CLBRAK
-DimList	    	: 	INTCT  |  DimList  COMMA  INTCT
-Functions		:   	FUNCTIONS  COLON  FuncList
+Declaration 	:	Type  ElemList  SCOLON {printf(";\n");}
+Type			: 	INT {printf("int ");} |  FLOAT {printf("float ");} |  CHAR {printf("char ");} |  LOGIC {printf("logic ");} |  VOID {printf("void ");}
+ElemList    	:	Elem  |  ElemList  COMMA {printf(", ");} Elem
+Elem        	:	ID {printf("%s", $1); }  Dims
+Dims			:	   |  OPBRAK {printf("[");} DimList  CLBRAK {printf("]");}
+DimList	    	: 	INTCT  {printf("%d",$1);} |  DimList  COMMA {printf(", ");} INTCT
+Functions		:   	FUNCTIONS  COLON {printf(":\n");}    FuncList
 FuncList		:   	Function   |   FuncList  Function
-Function		:	Header  OPBRACE  LocDecls  Stats  CLBRACE
-Header		:   	MAIN   |   Type  ID  OPPAR  Params  CLPAR
+Function		:	Header  OPBRACE {printf("\{\n");} {printf("\{\n");}  LocDecls  Stats  CLBRACE {printf("\}\n");}
+Header		:   	MAIN   |   Type  ID  OPPAR {printf("\(\n");}  Params  CLPAR {printf("\)\n");}
 Params		:   	    |   ParamList
-ParamList   	:   	Parameter  |  ParamList  COMMA  Parameter
+ParamList   	:   	Parameter  |  ParamList  COMMA {printf(", ");}  Parameter
 Parameter   	:   	Type  ID
-LocDecls		:   	    |   LOCAL  COLON  DeclList
-Stats       	:   	STATEMENTS  COLON  StatList
+LocDecls		:   	    |   LOCAL {printf("local ");}  COLON {printf(":\n");}   DeclList
+Stats       	:   	STATEMENTS {printf("statements ");}  COLON {printf(":\n");}   StatList
 StatList		:	   |  StatList  Statement
 Statement   	:   	CompStat  |  IfStat  |  WhileStat  |  DoStat
             	|   	ForStat  |  ReadStat  |  WriteStat  |  AssignStat
-            	|   	CallStat  |  ReturnStat  |  SCOLON
-CompStat		:   	OPBRACE  StatList  CLBRACE
-IfStat		:   	IF  OPPAR  Expression  CLPAR  Statement  ElseStat
+            	|   	CallStat  |  ReturnStat  |  SCOLON {printf(";\n");}
+CompStat		:   	OPBRACE {printf("\{\n");} StatList  CLBRACE {printf("\}\n");}
+IfStat		:   	IF  OPPAR {printf("\(\n");}  Expression  CLPAR {printf("\)\n");}  Statement  ElseStat
 ElseStat		:	   |  ELSE  Statement
-WhileStat   	:	WHILE  OPPAR  Expression  CLPAR  Statement
-DoStat  		:   	DO  Statement  WHILE  OPPAR  Expression  CLPAR  					SCOLON
-ForStat	    	:   	FOR  OPPAR  Variable  ASSIGN  Expression  SCOLON
-			Expression  SCOLON  Variable  ASSIGN  Expression
-			CLPAR   Statement
-ReadStat   	:   	READ  OPPAR  ReadList  CLPAR  SCOLON
-ReadList		:   	Variable  |  ReadList  COMMA  Variable
-WriteStat   	:	WRITE  OPPAR  WriteList  CLPAR  SCOLON
-WriteList		:	WriteElem  |  WriteList  COMMA  WriteElem
+WhileStat   	:	WHILE  OPPAR {printf("\(\n");}  Expression  CLPAR {printf("\)\n");}  Statement
+DoStat  		:   	DO  Statement  WHILE  OPPAR {printf("\(\n");}  Expression  CLPAR {printf("\)\n");}  					SCOLON {printf(";\n");}
+ForStat	    	:   	FOR  OPPAR {printf("\(\n");}  Variable  ASSIGN  Expression  SCOLON {printf(";\n");}
+			Expression  SCOLON {printf(";\n");}  Variable  ASSIGN  Expression
+			CLPAR {printf("\)\n");}   Statement
+ReadStat   	:   	READ {printf("read ");}  OPPAR {printf("\(\n");}  ReadList  CLPAR {printf("\)\n");}  SCOLON {printf(";\n");}
+ReadList		:   	Variable  |  ReadList {printf("read");}  COMMA {printf(", ");}  Variable
+WriteStat   	:	WRITE {printf("write ");}  OPPAR {printf("\(\n");}  WriteList  CLPAR {printf("\)\n");}  SCOLON {printf(";\n");}
+WriteList		:	WriteElem  |  WriteList  COMMA {printf(", ");}  WriteElem
 WriteElem		:   	STRING  |  Expression
-CallStat		:   	CALL  FuncCall  SCOLON
-FuncCall		:   	ID  OPPAR  Arguments  CLPAR
+CallStat		:   	CALL {printf("call ")}  FuncCall  SCOLON {printf(";\n");}
+FuncCall		:   	ID  OPPAR {printf("\(\n");}  Arguments  CLPAR {printf("\)\n");}
 Arguments		:	   |  ExprList
-ReturnStat  	:	RETURN  SCOLON  |  RETURN  Expression  SCOLON
-AssignStat  	:   	Variable  ASSIGN  Expression  SCOLON
-ExprList		:   	Expression  |  ExprList  COMMA  Expression
-Expression  	:   	AuxExpr1  |  Expression  OR  AuxExpr1
-AuxExpr1    	:   	AuxExpr2  |  AuxExpr1  AND  AuxExpr2
-AuxExpr2    	:   	AuxExpr3  |  NOT  AuxExpr3
+ReturnStat  	:	RETURN {printf("return");}  SCOLON {printf(";\n");}  |  RETURN {printf("return");} Expression  SCOLON {printf(";\n");}
+AssignStat  	:   	Variable  ASSIGN {printf(" <- ");}  Expression  SCOLON {printf(";\n");}
+ExprList		:   	Expression  |  ExprList  COMMA {printf(", ");}  Expression
+Expression  	:   	AuxExpr1  |  Expression  OR {printf(" | ");}  AuxExpr1
+AuxExpr1    	:   	AuxExpr2  |  AuxExpr1  AND {printf(" & ");} AuxExpr2
+AuxExpr2    	:   	AuxExpr3  |  NOT {printf(" ! ");} AuxExpr3
 AuxExpr3    	:   	AuxExpr4  |  AuxExpr4  RELOP  AuxExpr4
 AuxExpr4    	:	Term  |  AuxExpr4  ADOP  Term
 Term  	    	:   	Factor  |  Term  MULTOP  Factor
 Factor		:   	Variable  |  INTCT  |  FLOATCT  |  CHARCT
             	|   	TRUE  |  FALSE  |  NEG  Factor
-            	|   	OPPAR  Expression  CLPAR  |  FuncCall
+            	|   	OPPAR {printf("\(\n");}  Expression  CLPAR {printf("\)\n");}  |  FuncCall
 Variable		:   	ID  Subscripts
-Subscripts   	:	   |  OPBRAK  SubscrList  CLBRAK
-SubscrList	:   	AuxExpr4   |   SubscrList  COMMA  AuxExpr4
+Subscripts   	:	   |  OPBRAK {printf("[");}  SubscrList  CLBRAK {printf("]");}
+SubscrList	:   	AuxExpr4   |   SubscrList  COMMA {printf(", ");}  AuxExpr4
 %%
 #include "lex.yy.c"
 void tabular () {

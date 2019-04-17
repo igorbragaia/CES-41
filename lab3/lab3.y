@@ -105,7 +105,7 @@ Statement   	:   	CompStat  | {tabular();} IfStat  | {tabular();}  WhileStat  | 
             	|   	{tabular();} CallStat  |  {tabular();} ReturnStat  |  SCOLON {printf(";\n");}
 CompStat		:   	OPBRACE {printf("\{\n");} {tab++;}StatList{tab--;}  CLBRACE {tabular();printf("\}\n");}
 IfStat		:   	IF {printf("if");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");} Statement ElseStat
-ElseStat		:	   |  ELSE  {tab++;}Statement{tab--;}
+ElseStat		:	   |  ELSE {tabular();printf("else");} {tab++;}Statement{tab--;}
 WhileStat   	:	WHILE {printf("while");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  Statement
 DoStat  		:   	DO  Statement  WHILE  OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  					SCOLON {printf(";\n");}
 ForStat	    	:   	FOR {printf("for");} OPPAR {printf("\(");}  Variable  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";");}

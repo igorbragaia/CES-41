@@ -19,7 +19,6 @@ void tabular();
 int yylex();
 void yyerror(const char *s);
 static int input();
-int FromIfStat=0;
 %}
 %union {
 	char string[100];
@@ -101,11 +100,11 @@ Parameter   	:   	Type  ID {printf("%s",yylval.string);}
 LocDecls		:   	    |   LOCAL {printf("local ");tab++;}  COLON {printf(":\n");}   DeclList {tab--;}
 Stats       	:   	STATEMENTS {printf("statements");}  COLON {printf(":\n");tab++;}   StatList {tab--;}
 StatList		:	   |  StatList  Statement
-Statement   	:   	{FromIfStat=0;}CompStat  | {tabular();} IfStat  | {tabular();}  WhileStat  |  {tabular();} DoStat
-            	|   	{tabular();} ForStat  |  {tabular();} ReadStat  |  {tabular();} WriteStat  |  {tabular();if(FromIfStat){printf("\n");tab++;tabular();tab--;}} AssignStat
+Statement   	:   	CompStat  | {tabular();} IfStat  | {tabular();}  WhileStat  |  {tabular();} DoStat
+            	|   	{tabular();} ForStat  |  {tabular();} ReadStat  |  {tabular();} WriteStat  |  {tabular();} AssignStat
             	|   	{tabular();} CallStat  |  {tabular();} ReturnStat  |  SCOLON {printf(";\n");}
 CompStat		:   	OPBRACE {printf("\{\n");} {tab++;}StatList{tab--;}  CLBRACE {tabular();printf("\}\n");}
-IfStat		:   	IF {printf("if");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");} {FromIfStat=1;}Statement{FromIfStat=0;} ElseStat
+IfStat		:   	IF {printf("if");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");} Statement ElseStat
 ElseStat		:	   |  ELSE  {tab++;}Statement{tab--;}
 WhileStat   	:	WHILE {printf("while");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  Statement
 DoStat  		:   	DO  Statement  WHILE  OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  					SCOLON {printf(";\n");}

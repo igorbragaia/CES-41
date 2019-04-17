@@ -81,7 +81,7 @@ static int input();
 %token INVAL
 %token COMMENT
 %%
-Prog			:	PROGRAM {printf("program ");}  ID {printf("%s",yylval.string);} OPBRACE {printf(" \{\n");tab++;}  GlobDecls  Functions CLBRACE {tab--;printf("\}\n");}
+Prog			:	PROGRAM {printf("program ");}  ID {printf("%s",yylval.string);} OPBRACE {printf("\{\n");tab++;}  GlobDecls  Functions CLBRACE {tab--;printf("\}\n");}
 GlobDecls 	:	   |  GLOBAL {printf("global");} COLON {printf(":\n");}  DeclList
 DeclList		:	Declaration  |  DeclList  Declaration
 Declaration 	:	Type  ElemList  SCOLON {printf(";\n");}
@@ -89,11 +89,11 @@ Type			: 	INT {printf("int ");} |  FLOAT {printf("float ");} |  CHAR {printf("ch
 ElemList    	:	Elem  |  ElemList  COMMA {printf(", ");} Elem
 Elem        	:	ID {printf("%s",yylval.string);}  Dims
 Dims			:	   |  OPBRAK {printf("[");} DimList  CLBRAK {printf("]");}
-DimList	    	: 	INTCT  {printf("%d",yylval.valor);} |  DimList  COMMA {printf(", ");} INTCT
+DimList	    	: 	INTCT  {printf("%d",yylval.valor);} |  DimList  COMMA {printf(", ");} INTCT {printf("%d",yylval.valor);}
 Functions		:   	FUNCTIONS {printf("functions");} COLON {printf(":\n");}    FuncList
 FuncList		:   	Function   |   FuncList  Function
-Function		:	Header  OPBRACE {printf(" \{\n");tab++;} LocDecls  Stats  CLBRACE {tab--;printf("\}\n");}
-Header		:   	MAIN   |   Type  ID {printf("%s",yylval.string);} OPPAR {printf(" \(");}  Params  CLPAR {printf(" \)");}
+Function		:	Header  OPBRACE {printf("\{\n");tab++;} LocDecls  Stats  CLBRACE {tab--;printf("\}\n");}
+Header		:   	MAIN   |   Type  ID {printf("%s",yylval.string);} OPPAR {printf("\(");}  Params  CLPAR {printf("\)");}
 Params		:   	    |   ParamList
 ParamList   	:   	Parameter  |  ParamList  COMMA {printf(", ");}  Parameter
 Parameter   	:   	Type  ID {printf("%s",yylval.string);}
@@ -103,28 +103,28 @@ StatList		:	   |  StatList  Statement
 Statement   	:   	CompStat  |  IfStat  |  WhileStat  |  DoStat
             	|   	ForStat  |  ReadStat  |  WriteStat  |  AssignStat
             	|   	CallStat  |  ReturnStat  |  SCOLON {printf(";\n");}
-CompStat		:   	OPBRACE {printf(" \{\n");tab++;} StatList  CLBRACE {tab--;printf("\}\n");}
-IfStat		:   	IF  OPPAR {printf(" \(");}  Expression  CLPAR {printf(" \)");}  Statement  ElseStat
+CompStat		:   	OPBRACE {printf("\{\n");tab++;} StatList  CLBRACE {tab--;printf("\}\n");}
+IfStat		:   	IF  OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  Statement  ElseStat
 ElseStat		:	   |  ELSE  Statement
-WhileStat   	:	WHILE  OPPAR {printf(" \(");}  Expression  CLPAR {printf(" \)");}  Statement
-DoStat  		:   	DO  Statement  WHILE  OPPAR {printf(" \(");}  Expression  CLPAR {printf(" \)");}  					SCOLON {printf(";\n");}
-ForStat	    	:   	FOR  OPPAR {printf(" \(");}  Variable  ASSIGN  Expression  SCOLON {printf(";\n");}
-			Expression  SCOLON {printf(";\n");}  Variable  ASSIGN  Expression
-			CLPAR {printf(" \)");}   Statement
-ReadStat   	:   	READ {printf("read");}  OPPAR {printf(" \(");}  ReadList  CLPAR {printf(" \)");}  SCOLON {printf(";\n");}
+WhileStat   	:	WHILE {printf("while");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  Statement
+DoStat  		:   	DO  Statement  WHILE  OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  					SCOLON {printf(";\n");}
+ForStat	    	:   	FOR {printf("for");} OPPAR {printf("\(");}  Variable  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";");}
+			Expression  SCOLON {printf(";");}  Variable  ASSIGN {printf("<-");}  Expression
+			CLPAR {printf("\)");}   Statement
+ReadStat   	:   	READ {printf("read");}  OPPAR {printf("\(");}  ReadList  CLPAR {printf("\)");}  SCOLON {printf(";\n");}
 ReadList		:   	Variable  |  ReadList {printf("read");}  COMMA {printf(", ");}  Variable
-WriteStat   	:	WRITE {printf("write");}  OPPAR {printf(" \(");}  WriteList  CLPAR {printf(" \)");}  SCOLON {printf(";\n");}
+WriteStat   	:	WRITE {printf("write");}  OPPAR {printf("\(");}  WriteList  CLPAR {printf("\)");}  SCOLON {printf(";\n");}
 WriteList		:	WriteElem  |  WriteList  COMMA {printf(", ");}  WriteElem
 WriteElem		:   	STRING  |  Expression
 CallStat		:   	CALL {printf("call ");}  FuncCall  SCOLON {printf(";\n");}
-FuncCall		:   	ID {printf("%s",yylval.string);} OPPAR {printf(" \(");}  Arguments  CLPAR {printf(" \)");}
+FuncCall		:   	ID {printf("%s",yylval.string);} OPPAR {printf("\(");}  Arguments  CLPAR {printf("\)");}
 Arguments		:	   |  ExprList
 ReturnStat  	:	RETURN {printf("return");}  SCOLON {printf(";\n");}  |  RETURN {printf("return");} Expression  SCOLON {printf(";\n");}
-AssignStat  	:   	Variable  ASSIGN {printf(" <- ");}  Expression  SCOLON {printf(";\n");}
+AssignStat  	:   	Variable  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";\n");}
 ExprList		:   	Expression  |  ExprList  COMMA {printf(", ");}  Expression
 Expression  	:   	AuxExpr1  |  Expression  OR {printf(" | ");}  AuxExpr1
 AuxExpr1    	:   	AuxExpr2  |  AuxExpr1  AND {printf(" & ");} AuxExpr2
-AuxExpr2    	:   	AuxExpr3  |  NOT {printf(" ! ");} AuxExpr3
+AuxExpr2    	:   	AuxExpr3  |  NOT {printf("!");} AuxExpr3
 AuxExpr3    	:   	AuxExpr4  |  AuxExpr4  RELOP {
     switch($2){
       case RELOP_1:
@@ -163,8 +163,8 @@ Term  	    	:   	Factor  |  Term  MULTOP {
 } Factor
 Factor		:   	Variable  |  INTCT  {printf("%d",yylval.valor);} |  FLOATCT {printf("%f",yylval.valreal);}  |  CHARCT {printf("%s",yylval.string);}
             	|   	TRUE {printf("true");} |  FALSE {printf("false");}  |  NEG {printf("~");}  Factor
-            	|   	OPPAR {printf(" \(");}  Expression  CLPAR {printf(" \)");}  |  FuncCall
-Variable		:   	ID {printf(" %s",$1);} Subscripts
+            	|   	OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  |  FuncCall
+Variable		:   	ID {printf("%s",$1);} Subscripts
 Subscripts   	:	   |  OPBRAK {printf("[");}  SubscrList  CLBRAK {printf("]");}
 SubscrList	:   	AuxExpr4   |   SubscrList  COMMA {printf(", ");}  AuxExpr4
 %%

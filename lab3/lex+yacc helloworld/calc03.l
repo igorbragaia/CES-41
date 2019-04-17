@@ -17,3 +17,4 @@ ctfloat	{digit}+\.{digit}*
 ")"		{return FPAR;}
 "$"		{return DOLAR;}
 %%
+ 

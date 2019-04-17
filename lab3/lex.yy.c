@@ -2160,7 +2160,7 @@ void yyfree (void * ptr )
 void comentario () {
 	char c;
 	int estado = 1;
-	printf("Comentario:\n/*");
+	printf("\n/*");
 	while (estado != 3) {
 		c = input ();
 		printf("%c", c);

@@ -81,7 +81,7 @@ static int input();
 %token INVAL
 %token COMMENT
 %%
-Prog			:	PROGRAM  ID  OPBRACE  GlobDecls  Functions
+Prog			:	PROGRAM {printf("program ");}  ID  OPBRACE  GlobDecls  Functions
 				CLBRACE
 GlobDecls 	:	   |  GLOBAL  COLON  DeclList
 DeclList		:	Declaration  |  DeclList  Declaration

@@ -101,7 +101,7 @@ LocDecls		:   	    |   LOCAL {printf("local ");tab++;}  COLON {printf(":\n");}  
 Stats       	:   	STATEMENTS {printf("statements");}  COLON {printf(":\n");tab++;}   StatList {tab--;}
 StatList		:	   |  StatList  Statement
 Statement   	:   	CompStat  | {tabular();} IfStat  | {tabular();}  WhileStat  |  {tabular();} DoStat
-            	|   	{tabular();} ForStat  |  {tabular();} ReadStat  |  {tabular();} WriteStat  |  {tabular();} AssignStat
+            	|   	{tabular();} ForStat  |  {tabular();} ReadStat  |  {tabular();} WriteStat  |  {printf("\n");tab++;tabular();tab--;} AssignStat
             	|   	{tabular();} CallStat  |  {tabular();} ReturnStat  |  SCOLON {printf(";\n");}
 CompStat		:   	OPBRACE {printf("\n");tabular();printf("\{\n");} {tab++;}StatList{tab--;}  CLBRACE {tabular();printf("\}\n");}
 IfStat		:   	IF {printf("if");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");} Statement ElseStat

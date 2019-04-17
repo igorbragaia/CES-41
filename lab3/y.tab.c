@@ -1781,7 +1781,7 @@ yyreduce:
 
   case 68:
 #line 104 "lab3.y" /* yacc.c:1646  */
-    {tabular();}
+    {printf("\n");tab++;tabular();tab--;}
 #line 1786 "y.tab.c" /* yacc.c:1646  */
     break;
 

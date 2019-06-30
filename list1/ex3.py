@@ -3,16 +3,39 @@ from pprint import pprint
 
 # INICIALIZANDO VARIAVEIS
 
+# exemplo lab
 
-terminais = ["(", ")", "id", "+", "*"]
-nao_terminais = ["E", "T", "E'", "T'", "F"]
+terminais = ["ID", "CTE", "int", "real", "+", "*", "=", ";", ",", "(", ")", "{", "}"]
+nao_terminais = ["Prog", "Decls", "CmdComp", "Declaracao", "LDaux", "Tipo", "ListId", "LIaux", "ListCmd",
+                 "Comando", "LCaux", "CmdAtrib", "Expressao", "Termo", "Eaux"]
 producoes = {
-    "E": [["T", "E'"]],
-    "T": [["F", "T'"]],
-    "E'": [["+", "T", "E'"], ["eps"]],
-    "T'": [["*", "F", "T'"], ["eps"]],
-    "F": [["(", "E", ")"], ["id"]]
+    "Prog": [["Decls", "CmdComp"]],
+    "Decls": [["Declaracao", "LDaux"]],
+    "LDaux": [["eps"], ["Decls"]],
+    "Declaracao": [["Tipo", "ListId", ";"]],
+    "Tipo": [["int"], ["real"]],
+    "ListId": [["ID", "LIaux"]],
+    "LIaux": [["eps"], [",", "ListId"]],
+    "CmdComp": [["{", "ListCmd", "}"]],
+    "ListCmd": [["Comando", "LCaux"]],
+    "LCaux": [["eps"], ["ListCmd"]],
+    "Comando": [["CmdComp"], ["CmdAtrib"]],
+    "CmdAtrib": [["ID", "=", "Expressao", ";"]],
+    "Expressao": [["Termo", "Eaux"]],
+    "Eaux": [["eps"], ["+", "Expressao"]],
+    "Termo": [["(", "Expressao", ")"], ["ID", "CTE"]]
 }
+
+# # exemplo slide
+# terminais = ["(", ")", "id", "+", "*"]
+# nao_terminais = ["E", "T", "E'", "T'", "F"]
+# producoes = {
+#     "E": [["T", "E'"]],
+#     "T": [["F", "T'"]],
+#     "E'": [["+", "T", "E'"], ["eps"]],
+#     "T'": [["*", "F", "T'"], ["eps"]],
+#     "F": [["(", "E", ")"], ["id"]]
+# }
 primeiros = {}
 seguintes = {}
 
@@ -43,9 +66,15 @@ def add_to_seguintes(key, arr):
 
 
 # step1 - inicializacao
-simbolos = list(producoes.values())
-x = list(itertools.chain(*simbolos))
-simbolos = list(set(itertools.chain(*x)))
+# simbolos = list(producoes.values())
+# x = list(itertools.chain(*simbolos))
+# simbolos = list(set().union(set(itertools.chain(*x)), producoes.keys()))
+
+# sanity check
+# diff_set =  set(simbolos) - set().union(set(set().union(terminais, nao_terminais)))
+# assert(len(diff_set) >= 0)
+
+simbolos = list(set().union(terminais, nao_terminais, ["eps"]))
 
 for s in simbolos:
     if s in terminais:
@@ -72,7 +101,7 @@ while keepgoing:
                     i += 1
                 else:
                     break
-
+print("primeiros:\n")
 pprint(primeiros)
 
 # SEGUINTES
@@ -86,7 +115,7 @@ for x, val in producoes.items():
     for ys in val:
         for i in range(len(ys)):
             if i < len(ys) - 1 and ys[i] in nao_terminais:
-                add_to_seguintes(ys[i], [el for el in primeiros[ys[i+1]] if el != "eps"])
+                add_to_seguintes(ys[i], [el for el in primeiros[ys[i + 1]] if el != "eps"])
 
 # processo rotativo não convergente
 
@@ -96,8 +125,9 @@ while keepgoing:
     for x, val in producoes.items():
         for ys in val:
             for i in range(len(ys)):
-                if ys[i] in nao_terminais and (i == len(ys) - 1 or "eps" in primeiros[ys[i+1]]):
+                if ys[i] in nao_terminais and (i == len(ys) - 1 or "eps" in primeiros[ys[i + 1]]):
                     if add_to_seguintes(ys[i], seguintes[x]):
                         keepgoing = True
 
+print("\nseguintes:\n")
 pprint(seguintes)

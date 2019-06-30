@@ -5,7 +5,7 @@ from pprint import pprint
 terminais = ["(", ")", "id", "+", "*"]
 producoes = ["E", "T", "E'", "T'", "F"]
 
-prods = {
+hash_producoes = {
     "E": [["T", "E'"]],
     "T": [["F", "T'"]],
     "E'": [["+", "T", "E'"], ["eps"]],
@@ -13,71 +13,53 @@ prods = {
     "F": [["(", "E", ")"], ["id"]]
 }
 
-prims = {
+primeiros = {
 }
 
+
+def add_to_prims(key, arr):
+    response = False
+    if key not in primeiros:
+        primeiros[key] = []
+    for el in arr:
+        if el not in primeiros[key]:
+            primeiros[key].append(el)
+            response = True
+    return response
+
+
 # step1 - inicializacao
-simbolos = list(prods.values())
+simbolos = list(hash_producoes.values())
 x = list(itertools.chain(*simbolos))
 simbolos = list(set(itertools.chain(*x)))
 
+# step1 - inicializacao
 for s in simbolos:
     if s in terminais:
-        prims[s] = set([s])
-    elif s in prods and ["eps"] in prods[s]:
-        prims[s] = set(["eps"])
+        add_to_prims(s, [s])
+    elif s in hash_producoes and ["eps"] in hash_producoes[s]:
+        add_to_prims(s, ["eps"])
     else:
-        prims[s] = set()
+        add_to_prims(s, [])
 
-pprint(prims)
+pprint(primeiros)
+
 
 # step2 - processo rotativo convergente
-k = 0
 keepgoing = True
-while keepgoing and k < 5:
-    k += 1
+while keepgoing:
     keepgoing = False
-    for x, val in prods.items():
-        for ylist in val:
+    for x, val in hash_producoes.items():
+        for ys in val:
+
             i = 0
+            while i < len(ys):
+                if add_to_prims(x, [y for y in primeiros[ys[i]] if y != "eps"]):
+                    keepgoing = True
 
-            new_set = set([el for el in prims[ylist[0]] if el != "eps"])
-            if len(new_set) > 0:
-                prims[x] = prims[x].union(new_set)
-                keepgoing = True
+                if "eps" in primeiros[ys[i]]:
+                    i += 1
+                else:
+                    break
 
-            flag = True
-            while i < len(ylist) - 1 and flag:
-                flag &= "eps" in prims[ylist[i]]
-                if flag:
-                    new_set = set([el for el in prims[ylist[i+1]] if el != "eps"])
-                    if len(new_set) > 0:
-                        prims[x] = prims[x].union(new_set)
-                        keepgoing = True
-                i += 1
-
-            if i == len(ylist):
-                prims[x].add("eps")
-
-
-        #
-        # print(x + "->" + "".join(ylist))
-        #
-        # for i in range(len(ylist)):
-        #     flag = i == 0
-        #     if i != 0:
-        #         for el in ylist[:i]:
-        #             if "eps" in prims[el]:
-        #                 flag = True
-        #     if flag:
-        #         new_set = set([el for el in prims[ylist[i]] if el != "eps"])
-        #         prims[x] = prims[x].union(new_set)
-        #
-        # flag = False
-        # for el in ylist:
-        #     if "eps" in prims[el]:
-        #         flag = True
-        # if flag:
-        #     prims[x].add("eps")
-
-pprint(prims)
+pprint(primeiros)

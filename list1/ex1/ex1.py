@@ -1,121 +1,165 @@
-import _Const from ex1_constants
-global CONST = _Const()
+import ex1_constants as CONST
+
 
 class Atrib():
-    def __init__():
+    def __init__(self):
         self.cadeia = None
         self.valor = None
         self.atr = None
         self.carac = None
-        
+
+
 class Atom():
-    def __init__():
+    def __init__(self):
         self.tipo = None
         self.atrib = Atrib()
 
+    def __str__(self):
+        return str(self.tipo)
 
-class Compilador():   
-    def compilar(self, filename):
+
+class Compiler():
+    def __init__(self):
+        self.f = None
+        self.atom = None
+        self.state = None
+
+    def compile(self, filename):
         self.f = open(filename)
         self.atom = Atom()
-        self.self.estado_lex_lex = 1
 
-        self.estado_lex = 1
-        program = ""
-        while True:
-            carac = self.__novo_carac()
-            if c:          
-                carac = self.analise_lexica(carac)
-            else:
-                break
+        self.__novo_carac()
+        while self.atom.atrib.carac:
+            self.state = 1
+            self.atom.atrib.cadeia = ""
+            self.__novo_atomo()
+            print(self.atom)
 
         self.f.close()
 
+    def __novo_atomo(self):
+        novo_atomo = False
+        while self.atom.atrib.carac:
+                novo_atomo = True
+                self.analise_lexica(self.atom.atrib.carac)
+                if self.state == 3:
+                    break
+
+        return novo_atomo
+
     def __novo_carac(self):
-        return self.f.read()
+        self.atom.atrib.carac = self.f.read(1)
 
     def __classifica_cadeia(self):
-        pass
+        if self.atom.atrib.cadeia in ["BEGIN", "BOOLEAN", "DO", "ELSE", "END", "FALSE", "IF", "INTEGER", "PROGRAM",
+                                      "READ", "THEN", "TRUE", "VAR", "WHILE", "WRITE"]:
+            self.atom.tipo = getattr(CONST, self.atom.atrib.cadeia)
+        elif self.atom.atrib.cadeia in ["AND", "OR", "NOT"]:
+            self.atom.tipo = getattr(CONST, self.atom.atrib.cadeia)
+        else:
+            self.atom.tipo = CONST.CADEIA
 
     def __forma_atomo(self):
         pass
 
     def __forma_cadeia(self):
-        pass
+        self.atom.atrib.cadeia += self.atom.atrib.carac
 
     def __forma_numero(self):
-        pass
-        
+        self.atom.atrib.valor = int(self.atom.atrib.cadeia)
+
+    def __classifica(self):
+        if self.atom.atrib.carac == '+':
+            self.atom.tipo = CONST.MAIS
+        if self.atom.atrib.carac == '-':
+            self.atom.tipo = CONST.MENOS
+        if self.atom.atrib.carac == '/':
+            self.atom.tipo = CONST.DIV
+        if self.atom.atrib.carac == '~':
+            self.atom.tipo = CONST.NOT
+        if self.atom.atrib.carac == '=':
+            self.atom.tipo = CONST.IGUAL
+        if self.atom.atrib.carac == ';':
+            self.atom.tipo = CONST.PVIRG
+        if self.atom.atrib.carac == '.':
+            self.atom.tipo = CONST.PONTO
+        if self.atom.atrib.carac == ',':
+            self.atom.tipo = CONST.VIRG
+        if self.atom.atrib.carac == '(':
+            self.atom.tipo = CONST.ABPAR
+        if self.atom.atrib.carac == ')':
+            self.atom.tipo = CONST.FPAR
+
     def analise_lexica(self, carac):
-        if self.estado_lex == 1:
-            if carac == '\':
-                carac = self.__novo_carac()
-                self.estado_lex = 5
-            elif carac == '+' or case == '-' or case == '/' or case == '~' or carac == '=' or case == ';' or case == '.' or case == '(' or carac == ')':
-                self.atom = self.__classifica_cadeia()
-                carac = self.__novo_carac()                
-                self.estado_lex = 3
+        if self.state == 1:
+            if carac == '\\':
+                self.__novo_carac()
+                self.state = 5
+            elif carac == '+' or carac == '-' or carac == '/' or carac == '~' or carac == '=' or carac == ';' or \
+                    carac == '.' or carac == ',' or carac == '(' or carac == ')':
+                self.__classifica()
+                self.__novo_carac()
+                self.state = 3
             elif carac == '<':
-                carac = self.__novo_carac()
-                self.estado_lex = 6
+                self.__novo_carac()
+                self.state = 6
             elif carac == '>':
-                carac = self.__novo_carac()
-                self.estado_lex = 7
+                self.__novo_carac()
+                self.state = 7
             elif carac == ':':
-                carac = self.__novo_carac()
-                self.estado_lex = 8
+                self.__novo_carac()
+                self.state = 8
             elif carac == '\0':
                 self.atom.tipo = CONST.FINAL
-                self.estado_lex = 3
-            if carac.isalpha():
+                self.state = 3
+            elif carac.isalpha():
                 self.__forma_cadeia()
-                carac = self.__novo_carac()
-                self.estado_lex = 2
+                self.__novo_carac()
+                self.state = 2
             elif carac.isdigit():
                 self.__forma_cadeia()
-                carac = self.__novo_carac()
-                self.estado_lex = 4
-            elif (carac.isspace() or carac.iscntrl()) and carac != 0:
-                carac = self.__novo_carac()
-                self.estado_lex = 1
+                self.__novo_carac()
+                self.state = 4
+            # elif (carac.isspace() or carac.iscntrl()) and carac != 0:
+            elif carac == '\n' or carac == ' ':
+                self.__novo_carac()
+                self.state = 1
             else:
                 self.atom.tipo = CONST.INVAL
                 self.atom.atrib.carac = carac
-                carac = self.__novo_carac()
-                self.estado_lex = 3
-        elif self.estado_lex == 2:
+                self.__novo_carac()
+                self.state = 3
+        elif self.state == 2:
             if carac.isalnum():
                 self.__forma_cadeia()
-                carac = self.__novo_carac()
-                self.estado_lex = 2
+                self.__novo_carac()
+                self.state = 2
             else:
-                self.atom = self.__classifica_cadeia()
-                self.estado_lex = 3
-        elif self.estado_lex == 4:
+                self.__classifica_cadeia()
+                self.state = 3
+        elif self.state == 4:
             if carac.isdigit():
                 self.__forma_cadeia()
-                carac = self.__novo_carac()
-                self.estado_lex_lex = 4
+                self.__novo_carac()
+                self.state = 4
             else:
                 self.atom = self.__forma_numero()
-                self.estado_lex = 3
-        elif self.estado_lex == 6:
+                self.state = 3
+        elif self.state == 6:
             if carac == '=':
                 self.atom.tipo = CONST.OPREL
                 self.atom.atrib.atr = CONST.MENIG
-                carac = self.__novo_carac()
+                self.__novo_carac()
             elif carac == '>':
                 self.atom.tipo = CONST.OPREL
                 self.atom.atrib.atr = CONST.DIFER
-                carac = self.__novo_carac()
+                self.__novo_carac()
             else:
                 self.atom.tipo = CONST.OPREL
                 self.atom.atrib.atr = CONST.MENOR
-            self.estado_lex = 3
-        
-        return carac
 
-filename = "ex1_program.in"
+            self.state = 3
 
-compilador = Compilador()
-compilador.compilar(filename)
+
+compilador = Compiler()
+compilador.compile("ex1_input.in")

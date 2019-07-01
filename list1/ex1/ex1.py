@@ -1,5 +1,20 @@
 import ex1_constants as CONST
 
+separadores = ["BEGIN", "BOOLEAN", "DO", "ELSE", "END", "FALSE", "IF", "INTEGER", "PROGRAM", "READ", "THEN", "TRUE", "VAR", "WHILE", "WRITE" ]
+operadores = ["ID", "CTE", "CADEIA", "OPAD", "OPMULT", "OPNEG", "OPREL" ]
+palavras_reservadas = ["PVIRG", "PONTO", "DPONTS", "VIRG", "ABPAR", "FPAR", "ATRIB"]
+aux = ["INVAL", "FINAL"]
+
+str_to_const_separadores = {string: getattr(CONST, string) for string in separadores}
+str_to_const_operadores = {string: getattr(CONST, string) for string in operadores}
+str_to_const_palavras_reservadas = {string: getattr(CONST, string) for string in palavras_reservadas}
+str_to_const_aux = {string: getattr(CONST, string) for string in aux}
+
+separadores_id = str_to_const_separadores.values()
+operadores_id = str_to_const_operadores.values()
+palavras_reservadas_id = str_to_const_palavras_reservadas.values()
+aux_id = str_to_const_aux.values()
+
 
 class Atrib():
     def __init__(self):
@@ -15,7 +30,17 @@ class Atom():
         self.atrib = Atrib()
 
     def __str__(self):
-        return str(self.tipo)
+        if self.tipo == CONST.CTE:
+            return CONST.tipos[self.tipo] + ", " + str(self.tipo) + ", " + str(self.atrib.valor)
+        if self.tipo in separadores_id or self.tipo in palavras_reservadas_id:
+            return CONST.tipos[self.tipo] + ", " + str(self.tipo)
+        if self.tipo in operadores_id:
+            return CONST.tipos[self.tipo] + ", " + str(self.tipo) + ", " + str(self.atrib.atr)
+        if self.tipo == getattr(CONST, "INVAL"):
+            return "INVAL"
+        if self.tipo == getattr(CONST, "FINAL"):
+            return "FINAL"
+        return "ERRO"
 
 
 class Compiler():
@@ -50,14 +75,25 @@ class Compiler():
     def __novo_carac(self):
         self.atom.atrib.carac = self.f.read(1)
 
-    def __classifica_cadeia(self):
+    def __classifica_cadeia(self, tipo=None):
+        if tipo is not None:
+            self.atom.tipo = tipo
+            return
         if self.atom.atrib.cadeia in ["BEGIN", "BOOLEAN", "DO", "ELSE", "END", "FALSE", "IF", "INTEGER", "PROGRAM",
                                       "READ", "THEN", "TRUE", "VAR", "WHILE", "WRITE"]:
             self.atom.tipo = getattr(CONST, self.atom.atrib.cadeia)
-        elif self.atom.atrib.cadeia in ["AND", "OR", "NOT"]:
-            self.atom.tipo = getattr(CONST, self.atom.atrib.cadeia)
+        elif self.atom.atrib.cadeia == "OR":
+            self.atom.tipo = getattr(CONST, "OPAD")
+            self.atom.atrib.atr = getattr(CONST, "AND")
+        elif self.atom.atrib.cadeia == "AND":
+            self.atom.tipo = getattr(CONST, "OPMUL")
+            self.atom.atrib.atr = getattr(CONST, "AND")
+        elif self.atom.atrib.cadeia == "NOT":
+            self.atom.tipo = getattr(CONST, "OPNEG")
+            self.atom.atrib.atr = getattr(CONST, "NOT")
         else:
-            self.atom.tipo = CONST.CADEIA
+            self.atom.tipo = CONST.ID
+            self.atom.atrib.atr = self.atom.atrib.cadeia
 
     def __forma_atomo(self):
         pass
@@ -70,15 +106,23 @@ class Compiler():
 
     def __classifica(self):
         if self.atom.atrib.carac == '+':
-            self.atom.tipo = CONST.MAIS
+            self.atom.tipo = CONST.OPAD
+            self.atom.atrib.atr = CONST.MAIS
         if self.atom.atrib.carac == '-':
-            self.atom.tipo = CONST.MENOS
+            self.atom.tipo = CONST.OPAD
+            self.atom.atrib.atr = CONST.MENOS
         if self.atom.atrib.carac == '/':
-            self.atom.tipo = CONST.DIV
+            self.atom.tipo = CONST.OPMULT
+            self.atom.atrib.atr = CONST.DIV
+        if self.atom.atrib.carac == '*':
+            self.atom.tipo = CONST.OPMULT
+            self.atom.atrib.atr = CONST.VEZES
         if self.atom.atrib.carac == '~':
-            self.atom.tipo = CONST.NOT
+            self.atom.tipo = CONST.OPNEG
+            self.atom.atrib.atr = CONST.NEG
         if self.atom.atrib.carac == '=':
-            self.atom.tipo = CONST.IGUAL
+            self.atom.tipo = CONST.OPREL
+            self.atom.atrib.atr = CONST.IGUAL
         if self.atom.atrib.carac == ';':
             self.atom.tipo = CONST.PVIRG
         if self.atom.atrib.carac == '.':
@@ -89,13 +133,17 @@ class Compiler():
             self.atom.tipo = CONST.ABPAR
         if self.atom.atrib.carac == ')':
             self.atom.tipo = CONST.FPAR
+        if self.atom.atrib.cadeia == ':':
+            self.atom.tipo = CONST.DPONTS
+        if self.atom.atrib.cadeia == ':=':
+            self.atom.tipo = CONST.ATRIB
 
     def analise_lexica(self, carac):
         if self.state == 1:
             if carac == '\\':
                 self.__novo_carac()
                 self.state = 5
-            elif carac == '+' or carac == '-' or carac == '/' or carac == '~' or carac == '=' or carac == ';' or \
+            elif carac == '+' or carac == '-' or carac == '*' or carac == '/' or carac == '~' or carac == '=' or carac == ';' or \
                     carac == '.' or carac == ',' or carac == '(' or carac == ')':
                 self.__classifica()
                 self.__novo_carac()
@@ -107,6 +155,7 @@ class Compiler():
                 self.__novo_carac()
                 self.state = 7
             elif carac == ':':
+                self.__forma_cadeia()
                 self.__novo_carac()
                 self.state = 8
             elif carac == '\0':
@@ -120,8 +169,7 @@ class Compiler():
                 self.__forma_cadeia()
                 self.__novo_carac()
                 self.state = 4
-            # elif (carac.isspace() or carac.iscntrl()) and carac != 0:
-            elif carac == '\n' or carac == ' ':
+            elif carac == '\n' or carac == ' ' or carac == '\t' or carac == '\r':
                 self.__novo_carac()
                 self.state = 1
             else:
@@ -143,7 +191,8 @@ class Compiler():
                 self.__novo_carac()
                 self.state = 4
             else:
-                self.atom = self.__forma_numero()
+                self.__forma_numero()
+                self.__classifica_cadeia(tipo=CONST.CTE)
                 self.state = 3
         elif self.state == 6:
             if carac == '=':
@@ -159,6 +208,17 @@ class Compiler():
                 self.atom.atrib.atr = CONST.MENOR
 
             self.state = 3
+        elif self.state == 8:
+            if carac == '=':
+                self.__forma_cadeia()
+                self.__classifica()
+                self.__novo_carac()
+            else:
+                self.__classifica()
+            self.state = 3
+
+        else:
+            print("ESTADO NAO EXISTE")
 
 
 compilador = Compiler()

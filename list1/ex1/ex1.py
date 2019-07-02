@@ -1,4 +1,5 @@
 import ex1_constants as CONST
+from pprint import pprint
 
 separadores = ["BEGIN", "BOOLEAN", "DO", "ELSE", "END", "FALSE", "IF", "INTEGER", "PROGRAM", "READ", "THEN", "TRUE", "VAR", "WHILE", "WRITE" ]
 operadores = ["ID", "CTE", "CADEIA", "OPAD", "OPMULT", "OPNEG", "OPREL" ]
@@ -46,10 +47,15 @@ class Compiler():
         self.f = None
         self.atom = None
         self.state = None
+        self.log_syntatic = None
+        self.log_lexic = None
 
     def compile(self, filename):
         self.f = open(filename)
         self.atom = Atom()
+        self.log_syntatic = ""
+        self.log_lexic = []
+        self.indent = 0
 
         self.__novo_carac()
         self.state = 1
@@ -67,7 +73,7 @@ class Compiler():
                 if self.state == 3:
                     break
 
-        print(self.atom)
+        self.log_lexic.append(str(self.atom))
         self.state = 1
         self.atom.atrib.cadeia = ""
         return novo_atomo
@@ -265,11 +271,15 @@ class Compiler():
     def nao_esperado(self, atom_tipo):
         print("NAO ESPERADO ", atom_tipo)
 
+    def tab(self):
+        return "".join(["\t" for _ in range(self.indent)])
+
     def ExecProg(self):
         estado = 1
         while estado != 8:
             if estado == 1:
                 if self.atom.tipo == CONST.PROGRAM:
+                    self.log_syntatic += "PROGRAM"
                     self.__novo_atomo()
                     estado = 2
                 else:
@@ -277,6 +287,7 @@ class Compiler():
                     estado = 9
             elif estado == 2:
                 if self.atom.tipo == CONST.ID:
+                    self.log_syntatic += self.atom.atrib.atr
                     self.__novo_atomo()
                     estado = 3
                 else:
@@ -284,6 +295,7 @@ class Compiler():
                     estado = 9
             elif estado == 3:
                 if self.atom.tipo == CONST.PVIRG:
+                    self.log_syntatic += ";"
                     self.__novo_atomo()
                     estado = 4
                 else:
@@ -296,6 +308,7 @@ class Compiler():
                 estado = 6
             elif estado == 6:
                 if self.atom.tipo == CONST.PONTO:
+                    self.log_syntatic += "."
                     self.__novo_atomo()
                     estado = 7
                 else:
@@ -325,6 +338,7 @@ class Compiler():
                     estado = 10
 
     def ExecDecls(self):
+        self.log_syntatic += self.tab() + "VAR "
         estado = 11
         while estado != 13:
             if estado == 11:
@@ -357,6 +371,7 @@ class Compiler():
                 estado = 18
             elif estado == 18:
                 if self.atom.tipo == CONST.DPONTS:
+                    self.log_syntatic += ":"
                     self.__novo_atomo()
                     estado = 19
                 else:
@@ -367,6 +382,7 @@ class Compiler():
                 estado = 20
             elif estado == 20:
                 if self.atom.tipo == CONST.PVIRG:
+                    self.log_syntatic += ";"
                     self.__novo_atomo()
                     estado = 21
                 else:
@@ -386,6 +402,7 @@ class Compiler():
         while estado != 25:
             if estado == 23:
                 if self.atom.tipo == CONST.ID:
+                    self.log_syntatic += self.atom.atrib.atr
                     self.__novo_atomo()
                     estado = 24
                 else:
@@ -393,6 +410,7 @@ class Compiler():
                     estado = 26
             elif estado == 24:
                 if self.atom.tipo == CONST.VIRG:
+                    self.log_syntatic += ","
                     self.__novo_atomo()
                     estado = 23
                 else:
@@ -412,7 +430,12 @@ class Compiler():
         estado = 27
         while estado != 28:
             if estado == 27:
-                if self.atom.tipo in [CONST.INTEGER, CONST.BOOLEAN]:
+                if self.atom.tipo == CONST.INTEGER:
+                    self.log_syntatic += "INTEGER"
+                    self.__novo_atomo()
+                    estado = 28
+                elif self.atom.tipo == CONST.BOOLEAN:
+                    self.log_syntatic += "BOOLEAN"
                     self.__novo_atomo()
                     estado = 28
                 else:
@@ -429,6 +452,7 @@ class Compiler():
         while estado != 33:
             if estado == 30:
                 if self.atom.tipo == CONST.BEGIN:
+                    self.log_syntatic += "BEGIN"
                     self.__novo_atomo()
                     estado = 31
                 else:
@@ -439,6 +463,7 @@ class Compiler():
                 estado = 32
             elif estado == 32:
                 if self.atom.tipo == CONST.END:
+                    self.log_syntatic += "END"
                     self.__novo_atomo()
                     estado = 33
                 else:
@@ -497,6 +522,7 @@ class Compiler():
                     estado = 39
 
     def ExecCmdIf(self):
+        self.log_syntatic += "IF"
         estado = 40
         while estado != 45:
             if estado == 40:
@@ -504,6 +530,7 @@ class Compiler():
                 estado = 41
             elif estado == 41:
                 if self.atom.tipo == CONST.THEN:
+                    self.log_syntatic += "THEN"
                     self.__novo_atomo()
                     estado = 42
                 else:
@@ -514,6 +541,7 @@ class Compiler():
                 estado = 43
             elif estado == 43:
                 if self.atom.tipo == CONST.ELSE:
+                    self.log_syntatic += "ELSE"
                     self.__novo_atomo()
                     estado = 44
                 else:
@@ -523,6 +551,7 @@ class Compiler():
                 estado = 45
 
     def ExecCmdWhile(self):
+        self.log_syntatic += "WHILE"
         estado = 46
         while estado != 49:
             if estado == 46:
@@ -530,6 +559,7 @@ class Compiler():
                 estado = 47
             elif estado == 47:
                 if self.atom.tipo == CONST.DO:
+                    self.log_syntatic += "DO"
                     self.__novo_atomo()
                     estado = 48
                 else:
@@ -540,10 +570,12 @@ class Compiler():
                 estado = 49
 
     def ExecCmdRead(self):
+        self.log_syntatic += "READ"
         estado = 50
         while estado != 53:
             if estado == 50:
                 if self.atom.tipo == CONST.ABPAR:
+                    self.log_syntatic += "("
                     self.__novo_atomo()
                     estado = 51
                 else:
@@ -554,6 +586,7 @@ class Compiler():
                 estado = 52
             elif estado == 52:
                 if self.atom.tipo == CONST.FPAR:
+                    self.log_syntatic += ")"
                     self.__novo_atomo()
                     estado = 53
                 else:
@@ -561,10 +594,12 @@ class Compiler():
                     estado = 53
 
     def ExecCmdWrite(self):
+        self.log_syntatic += "WRITE"
         estado = 54
         while estado !=  57:
             if estado == 54:
                 if self.atom.tipo == CONST.ABPAR:
+                    self.log_syntatic += "("
                     self.__novo_atomo()
                     estado = 55
                 else:
@@ -575,6 +610,7 @@ class Compiler():
                 estado = 56
             elif estado == 56:
                 if self.atom.tipo == CONST.FPAR:
+                    self.log_syntatic += ")"
                     self.__novo_atomo()
                     estado = 57
                 else:
@@ -610,6 +646,7 @@ class Compiler():
         while estado != 66:
             if estado == 63:
                 if self.atom.tipo == CONST.ID:
+                    self.log_syntatic += self.atom.atrib.atr
                     self.__novo_atomo()
                     estado = 64
                 else:
@@ -617,6 +654,7 @@ class Compiler():
                     estado = 67
             elif estado == 64:
                 if self.atom.tipo == CONST.ATRIB:
+                    self.log_syntatic += ":="
                     self.__novo_atomo()
                     estado = 65
                 else:
@@ -698,6 +736,7 @@ class Compiler():
                 estado = 80
             elif estado == 80:
                 if self.atom.tipo == CONST.FPAR:
+                    self.log_syntatic += ")"
                     self.__novo_atomo()
                     estado = 81
                 else:
@@ -711,3 +750,5 @@ class Compiler():
 
 compilador = Compiler()
 compilador.compile("ex1_input.in")
+pprint(compilador.log_lexic)
+pprint(compilador.log_syntatic)

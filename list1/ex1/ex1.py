@@ -52,11 +52,10 @@ class Compiler():
         self.atom = Atom()
 
         self.__novo_carac()
-        while self.atom.atrib.carac:
-            self.state = 1
-            self.atom.atrib.cadeia = ""
-            self.__novo_atomo()
-            print(self.atom)
+        self.state = 1
+        self.atom.atrib.cadeia = ""
+        self.__novo_atomo()
+        self.ExecProg()
 
         self.f.close()
 
@@ -68,6 +67,9 @@ class Compiler():
                 if self.state == 3:
                     break
 
+        print(self.atom)
+        self.state = 1
+        self.atom.atrib.cadeia = ""
         return novo_atomo
 
     def __novo_carac(self):
@@ -75,8 +77,7 @@ class Compiler():
 
     def __categoriza_cadeia(self):
         cadeia = self.atom.atrib.cadeia
-        if cadeia in ["BEGIN", "BOOLEAN", "DO", "ELSE", "END", "FALSE", "IF", "INTEGER", "PROGRAM",
-                                      "READ", "THEN", "TRUE", "VAR", "WHILE", "WRITE"]:
+        if cadeia in ["BEGIN", "BOOLEAN", "DO", "ELSE", "END", "FALSE", "IF", "INTEGER", "PROGRAM", "READ", "THEN", "TRUE", "VAR", "WHILE", "WRITE"]:
             return 'reservada'
         if cadeia == 'AND':
             return 'AND'
@@ -305,7 +306,8 @@ class Compiler():
                     estado = 8
                 else:
                     self.esperado("END OF FILE")
-                    estado = 10
+                    # estado = 10
+                    estado = 8
             elif estado == 9:
                 if self.atom.tipo == CONST.PVIRG:
                     self.__novo_atomo()
@@ -614,7 +616,7 @@ class Compiler():
                     self.esperado("ID")
                     estado = 67
             elif estado == 64:
-                if self.atom.tiopo == CONST.ATRIB:
+                if self.atom.tipo == CONST.ATRIB:
                     self.__novo_atomo()
                     estado = 65
                 else:

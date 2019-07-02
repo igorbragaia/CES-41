@@ -73,7 +73,7 @@ class Compiler():
     def __novo_carac(self):
         self.atom.atrib.carac = self.f.read(1)
 
-    def __classifica_cadeia(self):
+    def __categoriza_cadeia(self):
         cadeia = self.atom.atrib.cadeia
         if cadeia in ["BEGIN", "BOOLEAN", "DO", "ELSE", "END", "FALSE", "IF", "INTEGER", "PROGRAM",
                                       "READ", "THEN", "TRUE", "VAR", "WHILE", "WRITE"]:
@@ -86,14 +86,8 @@ class Compiler():
             return 'NOT'
         return 'id'
 
-    def __forma_atomo(self):
-        pass
-
     def __forma_cadeia(self):
         self.atom.atrib.cadeia += self.atom.atrib.carac
-
-    def __forma_numero(self):
-        self.atom.atrib.valor = int(self.atom.atrib.cadeia)
 
     def __classifica(self, atomo):
         if atomo == '\0':
@@ -215,7 +209,7 @@ class Compiler():
                 self.__novo_carac()
                 self.state = 2
             else:
-                categoria = self.__classifica_cadeia()
+                categoria = self.__categoriza_cadeia()
                 self.__classifica(categoria)
                 self.state = 3
         elif self.state == 4:
@@ -224,7 +218,6 @@ class Compiler():
                 self.__novo_carac()
                 self.state = 4
             else:
-                self.__forma_numero()
                 self.__classifica('cte')
                 self.state = 3
         elif self.state == 5:

@@ -49,6 +49,10 @@ class Compiler():
         self.state = None
         self.log_syntatic = None
         self.log_lexic = None
+        self.indent = None
+
+    def __pprint(self, string):
+        self.log_syntatic += self.tab() + string
 
     def compile(self, filename):
         self.f = open(filename)
@@ -279,7 +283,7 @@ class Compiler():
         while estado != 8:
             if estado == 1:
                 if self.atom.tipo == CONST.PROGRAM:
-                    self.log_syntatic += "PROGRAM"
+                    self.log_syntatic += "PROGRAM "
                     self.__novo_atomo()
                     estado = 2
                 else:
@@ -295,7 +299,7 @@ class Compiler():
                     estado = 9
             elif estado == 3:
                 if self.atom.tipo == CONST.PVIRG:
-                    self.log_syntatic += ";"
+                    self.log_syntatic += ";\n" + self.tab()
                     self.__novo_atomo()
                     estado = 4
                 else:
@@ -323,6 +327,7 @@ class Compiler():
                     estado = 8
             elif estado == 9:
                 if self.atom.tipo == CONST.PVIRG:
+                    self.log_syntatic += ";"
                     self.__novo_atomo()
                     estado = 4
                 elif self.atom.tipo == CONST.FINAL:
@@ -371,7 +376,7 @@ class Compiler():
                 estado = 18
             elif estado == 18:
                 if self.atom.tipo == CONST.DPONTS:
-                    self.log_syntatic += ":"
+                    self.log_syntatic += ": "
                     self.__novo_atomo()
                     estado = 19
                 else:
@@ -382,7 +387,7 @@ class Compiler():
                 estado = 20
             elif estado == 20:
                 if self.atom.tipo == CONST.PVIRG:
-                    self.log_syntatic += ";"
+                    self.log_syntatic += ";\n" + self.tab()
                     self.__novo_atomo()
                     estado = 21
                 else:
@@ -452,7 +457,8 @@ class Compiler():
         while estado != 33:
             if estado == 30:
                 if self.atom.tipo == CONST.BEGIN:
-                    self.log_syntatic += "BEGIN"
+                    self.indent += 1
+                    self.log_syntatic += "BEGIN\n" + self.tab()
                     self.__novo_atomo()
                     estado = 31
                 else:
@@ -460,6 +466,8 @@ class Compiler():
                     estado = 34
             elif estado == 31:
                 self.ExecListCmd()
+                self.indent -= 1
+                self.log_syntatic += "\n" + self.tab()
                 estado = 32
             elif estado == 32:
                 if self.atom.tipo == CONST.END:
@@ -489,6 +497,7 @@ class Compiler():
                 estado = 36
             elif estado == 36:
                 if self.atom.tipo == CONST.PVIRG:
+                    self.log_syntatic += ";\n" + self.tab()
                     self.__novo_atomo()
                     estado = 35
                 else:
@@ -551,7 +560,7 @@ class Compiler():
                 estado = 45
 
     def ExecCmdWhile(self):
-        self.log_syntatic += "WHILE"
+        self.log_syntatic += "WHILE "
         estado = 46
         while estado != 49:
             if estado == 46:
@@ -559,7 +568,7 @@ class Compiler():
                 estado = 47
             elif estado == 47:
                 if self.atom.tipo == CONST.DO:
-                    self.log_syntatic += "DO"
+                    self.log_syntatic += " DO "
                     self.__novo_atomo()
                     estado = 48
                 else:
@@ -570,7 +579,7 @@ class Compiler():
                 estado = 49
 
     def ExecCmdRead(self):
-        self.log_syntatic += "READ"
+        self.log_syntatic += "READ "
         estado = 50
         while estado != 53:
             if estado == 50:
@@ -594,7 +603,7 @@ class Compiler():
                     estado = 53
 
     def ExecCmdWrite(self):
-        self.log_syntatic += "WRITE"
+        self.log_syntatic += "WRITE "
         estado = 54
         while estado !=  57:
             if estado == 54:
@@ -625,6 +634,7 @@ class Compiler():
                 estado = 59
             elif estado == 59:
                 if self.atom.tipo == CONST.VIRG:
+                    self.log_syntatic += ", "
                     self.__novo_atomo()
                     estado = 58
                 else:
@@ -635,6 +645,7 @@ class Compiler():
         while estado != 62:
             if estado == 61:
                 if self.atom.tipo == CONST.CADEIA:
+                    self.log_syntatic += "\"" + self.atom.atrib.atr + "\""
                     self.__novo_atomo()
                     estado = 62
                 else:
@@ -646,7 +657,7 @@ class Compiler():
         while estado != 66:
             if estado == 63:
                 if self.atom.tipo == CONST.ID:
-                    self.log_syntatic += self.atom.atrib.atr
+                    self.log_syntatic += self.atom.atrib.atr + " "
                     self.__novo_atomo()
                     estado = 64
                 else:
@@ -654,7 +665,7 @@ class Compiler():
                     estado = 67
             elif estado == 64:
                 if self.atom.tipo == CONST.ATRIB:
-                    self.log_syntatic += ":="
+                    self.log_syntatic += ":= "
                     self.__novo_atomo()
                     estado = 65
                 else:
@@ -680,6 +691,7 @@ class Compiler():
                 estado = 69
             elif estado == 69:
                 if self.atom.tipo == CONST.OPREL:
+                    self.log_syntatic += CONST.atributos_simbolos[self.atom.atrib.atr] + " "
                     self.__novo_atomo()
                     estado = 70
                 else:
@@ -696,6 +708,7 @@ class Compiler():
                 estado = 73
             elif estado == 73:
                 if self.atom.tipo == CONST.OPAD:
+                    self.log_syntatic += " + "
                     self.__novo_atomo()
                     estado = 72
                 else:
@@ -709,6 +722,7 @@ class Compiler():
                 estado = 76
             elif estado == 76:
                 if self.atom.tipo == CONST.OPMULT:
+                    self.log_syntatic += " * "
                     self.__novo_atomo()
                     estado = 75
                 else:
@@ -719,13 +733,20 @@ class Compiler():
         while estado != 81:
             if estado == 78:
                 if self.atom.tipo == CONST.ABPAR:
+                    self.log_syntatic += "("
                     self.__novo_atomo()
                     estado = 79
                 elif self.atom.tipo == CONST.OPNEG:
+                    self.log_syntatic += " - "
                     self.__novo_atomo()
                     self.ExecFat()
                     estado = 81
-                elif self.atom.tipo in [CONST.ID, CONST.CTE, CONST.TRUE, CONST.FALSE]:
+                elif self.atom.tipo in [CONST.ID, CONST.CTE]:
+                    self.log_syntatic += str(self.atom.atrib.atr) + ""
+                    self.__novo_atomo()
+                    estado = 81
+                elif self.atom.tipo in [CONST.TRUE, CONST.FALSE]:
+                    self.log_syntatic += CONST.tipos[self.atom.tipo]
                     self.__novo_atomo()
                     estado = 81
                 else:
@@ -736,13 +757,14 @@ class Compiler():
                 estado = 80
             elif estado == 80:
                 if self.atom.tipo == CONST.FPAR:
-                    self.log_syntatic += ")"
+                    self.log_syntatic += ")\n" + self.tab()
                     self.__novo_atomo()
                     estado = 81
                 else:
                     self.esperado("FPAR")
             elif estado == 82:
                 if self.atom.tipo in [CONST.PVIRG, CONST.END, CONST.DO, CONST.THEN, CONST.ELSE, CONST.VIRG, CONST.FINAL]:
+                    self.log_syntatic += CONST.tipos[self.atom.tipo]
                     estado = 81
                 else:
                     self.__novo_atomo()
@@ -750,5 +772,7 @@ class Compiler():
 
 compilador = Compiler()
 compilador.compile("ex1_input.in")
+print("Log do analisador léxico\n")
 pprint(compilador.log_lexic)
-pprint(compilador.log_syntatic)
+print("\nLog do analisador sintático (pretty printer)\n")
+print(compilador.log_syntatic)

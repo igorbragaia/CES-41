@@ -1,0 +1,76 @@
+ESPERADO:  END OF FILE
+Log do analisador léxico
+
+['PROGRAM; 9;',
+ 'ID; 16; fatorial',
+ 'PVIRG; 23;',
+ 'VAR; 13;',
+ 'ID; 16; n',
+ 'VIRG; 26;',
+ 'ID; 16; fat',
+ 'VIRG; 26;',
+ 'ID; 16; i',
+ 'DPONTS; 25;',
+ 'INTEGER; 8;',
+ 'PVIRG; 23;',
+ 'BEGIN; 1;',
+ 'READ; 10;',
+ 'ABPAR; 27;',
+ 'ID; 16; n',
+ 'FPAR; 28;',
+ 'PVIRG; 23;',
+ 'ID; 16; fat',
+ 'ATRIB; 29;',
+ 'CTE; 17; 1',
+ 'PVIRG; 23;',
+ 'ID; 16; i',
+ 'ATRIB; 29;',
+ 'CTE; 17; 1',
+ 'PVIRG; 23;',
+ 'WHILE; 14;',
+ 'ID; 16; i',
+ 'OPREL; 22; 10',
+ 'ID; 16; n',
+ 'DO; 3;',
+ 'BEGIN; 1;',
+ 'ID; 16; fat',
+ 'ATRIB; 29;',
+ 'ID; 16; fat',
+ 'OPMULT; 20; 4',
+ 'ID; 16; i',
+ 'PVIRG; 23;',
+ 'ID; 16; i',
+ 'ATRIB; 29;',
+ 'ID; 16; i',
+ 'OPAD; 19; 1',
+ 'CTE; 17; 1',
+ 'END; 5;',
+ 'PVIRG; 23;',
+ 'WRITE; 15;',
+ 'ABPAR; 27;',
+ 'CADEIA; 18; O fatorial de',
+ 'VIRG; 26;',
+ 'ID; 16; n',
+ 'VIRG; 26;',
+ 'CADEIA; 18;  eh ',
+ 'VIRG; 26;',
+ 'ID; 16; fat',
+ 'FPAR; 28;',
+ 'END; 5;',
+ 'PONTO; 24;',
+ 'PONTO; 24;']
+
+Log do analisador sintático (pretty printer)
+
+PROGRAM fatorial;
+VAR n,fat,i: INTEGER;
+BEGIN
+	READ (n);
+	fat := 1;
+	i := 1;
+	WHILE i<= n DO BEGIN
+		fat := fat * i;
+		i := i + 1
+	END;
+	WRITE ("O fatorial de", n, " eh ", fat)
+END.

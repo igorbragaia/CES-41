@@ -1,5 +1,7 @@
 import ex1_constants as CONST
 from pprint import pprint
+from ex1_estruturas_de_dados_aux import TabelaDeSimbolos
+
 
 separadores = ["BEGIN", "BOOLEAN", "DO", "ELSE", "END", "FALSE", "IF", "INTEGER", "PROGRAM", "READ", "THEN", "TRUE", "VAR", "WHILE", "WRITE" ]
 operadores = ["ID", "CTE", "CADEIA", "OPAD", "OPMULT", "OPNEG", "OPREL" ]
@@ -17,7 +19,7 @@ palavras_reservadas_id = str_to_const_palavras_reservadas.values()
 aux_id = str_to_const_aux.values()
 
 
-class Atrib():
+class Atrib:
     def __init__(self):
         self.cadeia = None
         self.valor = None
@@ -25,7 +27,7 @@ class Atrib():
         self.carac = None
 
 
-class Atom():
+class Atom:
     def __init__(self):
         self.tipo = None
         self.atrib = Atrib()
@@ -42,7 +44,7 @@ class Atom():
         return "ERRO"
 
 
-class Compiler():
+class Compiler:
     def __init__(self):
         self.f = None
         self.atom = None
@@ -50,6 +52,9 @@ class Compiler():
         self.log_syntatic = None
         self.log_lexic = None
         self.indent = None
+        self.tabela_de_simbolos = TabelaDeSimbolos()
+        self.declarando = False
+        self.tipocorrente = None
 
     def __pprint(self, string):
         self.log_syntatic += self.tab() + string
@@ -280,6 +285,7 @@ class Compiler():
 
     def ExecProg(self):
         estado = 1
+        self.declarando = False
         while estado != 8:
             if estado == 1:
                 if self.atom.tipo == CONST.PROGRAM:
@@ -292,6 +298,7 @@ class Compiler():
             elif estado == 2:
                 if self.atom.tipo == CONST.ID:
                     self.log_syntatic += self.atom.atrib.atr
+                    self.tabela_de_simbolos.insere_simb(self.atom.atrib.atr, CONST.IDPROG)
                     self.__novo_atomo()
                     estado = 3
                 else:
@@ -347,6 +354,7 @@ class Compiler():
         estado = 11
         while estado != 13:
             if estado == 11:
+                self.declarando = True
                 if self.atom.tipo == CONST.VAR:
                     self.__novo_atomo()
                     estado = 12
@@ -355,6 +363,7 @@ class Compiler():
             elif estado == 12:
                 self.ExecListDecl()
                 estado = 13
+                self.declarando = False
 
     def ExecListDecl(self):
         estado = 14
@@ -372,6 +381,7 @@ class Compiler():
         estado = 17
         while estado != 21:
             if estado == 17:
+                self.tabela_de_simbolos.anula_list_simb()
                 self.ExecListId()
                 estado = 18
             elif estado == 18:
@@ -384,6 +394,7 @@ class Compiler():
                     estado = 22
             elif estado == 19:
                 self.ExecTip()
+                self.tabela_de_simbolos.adic_tipo_var(self.tipocorrente)
                 estado = 20
             elif estado == 20:
                 if self.atom.tipo == CONST.PVIRG:
@@ -408,6 +419,18 @@ class Compiler():
             if estado == 23:
                 if self.atom.tipo == CONST.ID:
                     self.log_syntatic += self.atom.atrib.atr
+                    if self.declarando:
+                        if self.tabela_de_simbolos.procura_simb(self.atom.atrib.atr):
+                            pass
+                        else:
+                            self.tabela_de_simbolos.insere_simb(self.atom.atrib.atr, CONST.IDVAR)
+                    else:
+                        simb = self.tabela_de_simbolos.procura_simb(self.atom.atrib.atr)
+                        if simb:
+                            simb.inic = True
+                            simb.ref = True
+                        else:
+                            pass
                     self.__novo_atomo()
                     estado = 24
                 else:
@@ -436,10 +459,12 @@ class Compiler():
         while estado != 28:
             if estado == 27:
                 if self.atom.tipo == CONST.INTEGER:
+                    self.tipocorrente = CONST.TIPOINTEIRA
                     self.log_syntatic += "INTEGER"
                     self.__novo_atomo()
                     estado = 28
                 elif self.atom.tipo == CONST.BOOLEAN:
+                    self.tipocorrente = CONST.TIPOBOOLEANA
                     self.log_syntatic += "BOOLEAN"
                     self.__novo_atomo()
                     estado = 28
@@ -657,6 +682,12 @@ class Compiler():
         while estado != 66:
             if estado == 63:
                 if self.atom.tipo == CONST.ID:
+                    simb = self.tabela_de_simbolos.procura_simb(self.atom.atrib.atr)
+                    if simb:
+                        simb.inic = True
+                        simb.ref = True
+                    else:
+                        pass
                     self.log_syntatic += self.atom.atrib.atr + " "
                     self.__novo_atomo()
                     estado = 64
@@ -741,7 +772,16 @@ class Compiler():
                     self.__novo_atomo()
                     self.ExecFat()
                     estado = 81
-                elif self.atom.tipo in [CONST.ID, CONST.CTE]:
+                elif self.atom.tipo == CONST.ID:
+                    simb = self.tabela_de_simbolos.procura_simb(self.atom.atrib.atr)
+                    if simb:
+                        simb.ref = True
+                    else:
+                        pass
+                    self.log_syntatic += str(self.atom.atrib.atr) + ""
+                    self.__novo_atomo()
+                    estado = 81
+                elif self.atom.tipo == CONST.CTE:
                     self.log_syntatic += str(self.atom.atrib.atr) + ""
                     self.__novo_atomo()
                     estado = 81
@@ -776,3 +816,5 @@ print("Log do analisador léxico\n")
 pprint(compilador.log_lexic)
 print("\nLog do analisador sintático (pretty printer)\n")
 print(compilador.log_syntatic)
+print("\nLog do analisador semantico\n")
+compilador.tabela_de_simbolos.print()

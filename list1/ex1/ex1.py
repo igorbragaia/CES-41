@@ -887,7 +887,9 @@ compilador = Compiler()
 compilador.compile("exemplos/input1.txt")
 
 print("Log do analisador léxico\n")
-pprint(compilador.log_lexic)
+for text in compilador.log_lexic:
+    fields = text.split(';')
+    print('%7s, ' % fields[0], '%3s, ' % fields[1], '%s' % fields[2])
 
 print("\nLog do analisador sintático (pretty printer)\n")
 print(compilador.log_syntatic)

@@ -55,7 +55,6 @@ class Compiler:
         self.tabela_de_simbolos = TabelaDeSimbolos()
         self.declarando = False
         self.tipocorrente = None
-        ret = None
 
     def __pprint(self, string):
         self.log_syntatic += self.tab() + string
@@ -884,7 +883,7 @@ class Compiler:
         return ret
 
 compilador = Compiler()
-compilador.compile("exemplos/input1.txt")
+compilador.compile("exemplos/input4.txt")
 
 print("Log do analisador léxico\n")
 for text in compilador.log_lexic:

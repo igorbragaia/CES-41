@@ -1,5 +1,5 @@
 PROGRAM fatorial;
-VAR n, fat, i: INTEGER;
+VAR n, fat, i, j: INTEGER;
 BEGIN
 READ (n);
 fat := 1;  i := 1;

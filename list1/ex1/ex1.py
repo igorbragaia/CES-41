@@ -55,6 +55,7 @@ class Compiler:
         self.tabela_de_simbolos = TabelaDeSimbolos()
         self.declarando = False
         self.tipocorrente = None
+        ret = None
 
     def __pprint(self, string):
         self.log_syntatic += self.tab() + string
@@ -275,10 +276,10 @@ class Compiler:
             print("ESTADO NAO EXISTE")
 
     def esperado(self, atom_tipo):
-        print("ESPERADO: ", atom_tipo)
+        self.__pprint("ESPERADO: " + atom_tipo)
 
     def nao_esperado(self, atom_tipo):
-        print("NAO ESPERADO ", atom_tipo)
+        self.__pprint("NAO ESPERADO: " + str(atom_tipo))
 
     def tab(self):
         return "".join(["\t" for _ in range(self.indent)])
@@ -421,16 +422,19 @@ class Compiler:
                     self.log_syntatic += self.atom.atrib.atr
                     if self.declarando:
                         if self.tabela_de_simbolos.procura_simb(self.atom.atrib.atr):
-                            pass
+                            self.tabela_de_simbolos.dupla_declaracao(self.atom.atrib.atr)
                         else:
                             self.tabela_de_simbolos.insere_simb(self.atom.atrib.atr, CONST.IDVAR)
                     else:
                         simb = self.tabela_de_simbolos.procura_simb(self.atom.atrib.atr)
                         if simb:
-                            simb.inic = True
-                            simb.ref = True
+                            if simb.tipo_id == CONST.IDVAR:
+                                simb.inic = True
+                                simb.ref = True
+                            else:
+                                self.tabela_de_simbolos.tipo_inadequado(self.atom.atrib.atr)
                         else:
-                            pass
+                            self.tabela_de_simbolos.nao_declarado(self.atom.atrib.atr)
                     self.__novo_atomo()
                     estado = 24
                 else:
@@ -560,7 +564,9 @@ class Compiler:
         estado = 40
         while estado != 45:
             if estado == 40:
-                self.ExecExpr()
+                texpr = self.ExecExpr()
+                if texpr != CONST.TIPOBOOLEANA:
+                    self.tabela_de_simbolos.incompatibilidade("Expressao nao booleana no if")
                 estado = 41
             elif estado == 41:
                 if self.atom.tipo == CONST.THEN:
@@ -589,7 +595,9 @@ class Compiler:
         estado = 46
         while estado != 49:
             if estado == 46:
-                self.ExecExpr()
+                texpr = self.ExecExpr()
+                if texpr != CONST.TIPOBOOLEANA:
+                    self.tabela_de_simbolos.incompatibilidade("Expressao nao booleana no while")
                 estado = 47
             elif estado == 47:
                 if self.atom.tipo == CONST.DO:
@@ -679,15 +687,20 @@ class Compiler:
 
     def ExecCmdAtrib(self):
         estado = 63
+        tvar = 0
         while estado != 66:
             if estado == 63:
                 if self.atom.tipo == CONST.ID:
                     simb = self.tabela_de_simbolos.procura_simb(self.atom.atrib.atr)
                     if simb:
-                        simb.inic = True
-                        simb.ref = True
+                        if simb.tipo_id == CONST.IDVAR:
+                            simb.inic = True
+                            simb.ref = True
+                            tvar = simb.tipo_var
+                        else:
+                            self.tabela_de_simbolos.tipo_inadequado(self.atom.atrib.atr)
                     else:
-                        pass
+                        self.tabela_de_simbolos.nao_declarado(self.atom.atrib.atr)
                     self.log_syntatic += self.atom.atrib.atr + " "
                     self.__novo_atomo()
                     estado = 64
@@ -703,7 +716,9 @@ class Compiler:
                     self.esperado("ATRIB")
                     estado = 67
             elif estado == 65:
-                self.ExecExpr()
+                texpr = self.ExecExpr()
+                if tvar != texpr:
+                    self.tabela_de_simbolos.incompatibilidade("Lados esquerdo e direito incompatíveis num atribuição")
                 estado = 66
             elif estado == 67:
                 if self.atom.tipo == CONST.ATRIB:
@@ -716,51 +731,95 @@ class Compiler:
 
     def ExecExpr(self):
         estado = 68
+        oper = 0
         while estado != 71:
             if estado == 68:
-                self.ExecExprSimpl()
+                ret = self.ExecExprSimpl()
                 estado = 69
             elif estado == 69:
                 if self.atom.tipo == CONST.OPREL:
+                    oper = self.atom.atrib.atr
+                    if oper in [CONST.MENOR, CONST.MENIG, CONST.MAIOR, CONST.MAIG] and ret != CONST.TIPOINTEIRA:
+                        self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador operador relacional")
                     self.log_syntatic += CONST.atributos_simbolos[self.atom.atrib.atr] + " "
                     self.__novo_atomo()
                     estado = 70
                 else:
                     estado = 71
             elif estado == 70:
-                self.ExecExprSimpl()
+                ret1 = self.ExecExprSimpl()
+                if oper in [CONST.MENOR, CONST.MENIG, CONST.MAIOR, CONST.MAIG] and ret1 != CONST.TIPOINTEIRA:
+                    self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador operator relacional")
+                elif oper in [CONST.IGUAL, CONST.DIFER] and ret1 != ret:
+                    self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador operador relacional")
+                ret = CONST.TIPOBOOLEANA
                 estado = 71
+
+        return ret
 
     def ExecExprSimpl(self):
         estado = 72
+        oper = 0
         while estado != 74:
             if estado == 72:
-                self.ExecTerm()
+                ret = self.ExecTerm()
+                if oper == CONST.OR and ret != CONST.TIPOBOOLEANA:
+                    self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador OR")
+                    ret = CONST.TIPOBOOLEANA
+                elif (oper == CONST.MAIS or oper == CONST.MENOS) and ret != CONST.TIPOINTEIRA:
+                    self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador aritmetico aditivo")
+                    ret = CONST.TIPOINTEIRA
                 estado = 73
             elif estado == 73:
                 if self.atom.tipo == CONST.OPAD:
+                    oper = self.atom.atrib.atr
+                    if oper == CONST.OR and ret != CONST.TIPOBOOLEANA:
+                        self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador OR")
+                        ret = CONST.TIPOBOOLEANA
+                    elif (oper == CONST.MAIS or oper == CONST.MENOS) and ret != CONST.TIPOINTEIRA:
+                        self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador aritmetico aditivo")
+                        ret = CONST.TIPOINTEIRA
                     self.log_syntatic += " + "
                     self.__novo_atomo()
                     estado = 72
                 else:
                     estado = 74
 
+        return ret
+
     def ExecTerm(self):
         estado = 75
+        oper = 0
         while estado != 77:
             if estado == 75:
-                self.ExecFat()
+                ret = self.ExecFat()
+                if oper == CONST.AND and ret != CONST.TIPOBOOLEANA:
+                    self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador AND")
+                    ret = CONST.TIPOBOOLEANA
+                elif (oper == CONST.VEZES or oper == CONST.DIV) and ret != CONST.TIPOINTEIRA:
+                    self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador aritmetico multiplicativo")
+                    ret = CONST.TIPOINTEIRA
                 estado = 76
             elif estado == 76:
                 if self.atom.tipo == CONST.OPMULT:
+                    oper = self.atom.atrib.atr
+                    if oper == CONST.AND and ret != CONST.TIPOBOOLEANA:
+                        self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador and")
+                        ret = CONST.TIPOBOOLEANA
+                    elif (oper == CONST.VEZES or oper == CONST.DIV) and ret != CONST.TIPOINTEIRA:
+                        self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador aritmetico multiplicativo")
+                        ret = CONST.TIPOINTEIRA
                     self.log_syntatic += " * "
                     self.__novo_atomo()
                     estado = 75
                 else:
                     estado = 77
 
+        return ret
+
     def ExecFat(self):
         estado = 78
+        ret = 0
         while estado != 81:
             if estado == 78:
                 if self.atom.tipo == CONST.ABPAR:
@@ -769,31 +828,44 @@ class Compiler:
                     estado = 79
                 elif self.atom.tipo == CONST.OPNEG:
                     self.log_syntatic += " - "
+                    oper = self.atom.atrib.atr
                     self.__novo_atomo()
-                    self.ExecFat()
+                    ret = self.ExecFat()
+                    if oper == "NOT" and ret != CONST.TIPOBOOLEANA:
+                        self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador NOT")
+                        ret = CONST.TIPOBOOLEANA
+                    elif oper == "NEG" and ret != CONST.TIPOINTEIRA:
+                        self.tabela_de_simbolos.incompatibilidade("Operando incompatível com operador NEG")
+                        ret = CONST.TIPOINTEIRA
                     estado = 81
                 elif self.atom.tipo == CONST.ID:
                     simb = self.tabela_de_simbolos.procura_simb(self.atom.atrib.atr)
                     if simb:
-                        simb.ref = True
+                        if simb.tipo_id == CONST.IDVAR:
+                            simb.ref = True
+                            ret = simb.tipo_var
+                        else:
+                            self.tabela_de_simbolos.tipo_inadequado(self.atom.atrib.atr)
                     else:
-                        pass
+                        self.tabela_de_simbolos.nao_declarado(self.atom.atrib.atr)
                     self.log_syntatic += str(self.atom.atrib.atr) + ""
                     self.__novo_atomo()
                     estado = 81
                 elif self.atom.tipo == CONST.CTE:
                     self.log_syntatic += str(self.atom.atrib.atr) + ""
+                    ret = CONST.TIPOINTEIRA
                     self.__novo_atomo()
                     estado = 81
                 elif self.atom.tipo in [CONST.TRUE, CONST.FALSE]:
                     self.log_syntatic += CONST.tipos[self.atom.tipo]
+                    ret = CONST.TIPOBOOLEANA
                     self.__novo_atomo()
                     estado = 81
                 else:
                     self.nao_esperado(self.atom.tipo)
                     estado = 82
             elif estado == 79:
-                self.ExecExpr()
+                ret = self.ExecExpr()
                 estado = 80
             elif estado == 80:
                 if self.atom.tipo == CONST.FPAR:
@@ -808,13 +880,21 @@ class Compiler:
                     estado = 81
                 else:
                     self.__novo_atomo()
+        # if ret == 0:
+        #     print(ret)
 
+        return ret
 
 compilador = Compiler()
 compilador.compile("ex1_input.in")
+
 print("Log do analisador léxico\n")
 pprint(compilador.log_lexic)
+
 print("\nLog do analisador sintático (pretty printer)\n")
 print(compilador.log_syntatic)
+
 print("\nLog do analisador semantico\n")
 compilador.tabela_de_simbolos.print()
+compilador.tabela_de_simbolos.log_erros()
+pprint(compilador.tabela_de_simbolos.log_semantic)

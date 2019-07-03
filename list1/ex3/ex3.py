@@ -5,37 +5,37 @@ from pprint import pprint
 
 # exemplo lab
 
-terminais = ["ID", "CTE", "int", "real", "+", "*", "=", ";", ",", "(", ")", "{", "}"]
-nao_terminais = ["Prog", "Decls", "CmdComp", "Declaracao", "LDaux", "Tipo", "ListId", "LIaux", "ListCmd",
-                 "Comando", "LCaux", "CmdAtrib", "Expressao", "Termo", "Eaux"]
-producoes = {
-    "Prog": [["Decls", "CmdComp"]],
-    "Decls": [["Declaracao", "LDaux"]],
-    "LDaux": [["eps"], ["Decls"]],
-    "Declaracao": [["Tipo", "ListId", ";"]],
-    "Tipo": [["int"], ["real"]],
-    "ListId": [["ID", "LIaux"]],
-    "LIaux": [["eps"], [",", "ListId"]],
-    "CmdComp": [["{", "ListCmd", "}"]],
-    "ListCmd": [["Comando", "LCaux"]],
-    "LCaux": [["eps"], ["ListCmd"]],
-    "Comando": [["CmdComp"], ["CmdAtrib"]],
-    "CmdAtrib": [["ID", "=", "Expressao", ";"]],
-    "Expressao": [["Termo", "Eaux"]],
-    "Eaux": [["eps"], ["+", "Expressao"]],
-    "Termo": [["(", "Expressao", ")"], ["ID"], ["CTE"]]
-}
+# terminais = ["ID", "CTE", "int", "real", "+", "*", "=", ";", ",", "(", ")", "{", "}"]
+# nao_terminais = ["Prog", "Decls", "CmdComp", "Declaracao", "LDaux", "Tipo", "ListId", "LIaux", "ListCmd",
+#                  "Comando", "LCaux", "CmdAtrib", "Expressao", "Termo", "Eaux"]
+# producoes = {
+#     "Prog": [["Decls", "CmdComp"]],
+#     "Decls": [["Declaracao", "LDaux"]],
+#     "LDaux": [["eps"], ["Decls"]],
+#     "Declaracao": [["Tipo", "ListId", ";"]],
+#     "Tipo": [["int"], ["real"]],
+#     "ListId": [["ID", "LIaux"]],
+#     "LIaux": [["eps"], [",", "ListId"]],
+#     "CmdComp": [["{", "ListCmd", "}"]],
+#     "ListCmd": [["Comando", "LCaux"]],
+#     "LCaux": [["eps"], ["ListCmd"]],
+#     "Comando": [["CmdComp"], ["CmdAtrib"]],
+#     "CmdAtrib": [["ID", "=", "Expressao", ";"]],
+#     "Expressao": [["Termo", "Eaux"]],
+#     "Eaux": [["eps"], ["+", "Expressao"]],
+#     "Termo": [["(", "Expressao", ")"], ["ID"], ["CTE"]]
+# }
 
 # # exemplo slide
-# terminais = ["(", ")", "id", "+", "*"]
-# nao_terminais = ["E", "T", "E'", "T'", "F"]
-# producoes = {
-#     "E": [["T", "E'"]],
-#     "T": [["F", "T'"]],
-#     "E'": [["+", "T", "E'"], ["eps"]],
-#     "T'": [["*", "F", "T'"], ["eps"]],
-#     "F": [["(", "E", ")"], ["id"]]
-# }
+terminais = ["(", ")", "id", "+", "*"]
+nao_terminais = ["E", "T", "E'", "T'", "F"]
+producoes = {
+    "E": [["T", "E'"]],
+    "T": [["F", "T'"]],
+    "E'": [["+", "T", "E'"], ["eps"]],
+    "T'": [["*", "F", "T'"], ["eps"]],
+    "F": [["(", "E", ")"], ["id"]]
+}
 primeiros = {}
 seguintes = {}
 

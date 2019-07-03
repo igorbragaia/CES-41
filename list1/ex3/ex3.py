@@ -23,7 +23,7 @@ producoes = {
     "CmdAtrib": [["ID", "=", "Expressao", ";"]],
     "Expressao": [["Termo", "Eaux"]],
     "Eaux": [["eps"], ["+", "Expressao"]],
-    "Termo": [["(", "Expressao", ")"], ["ID", "CTE"]]
+    "Termo": [["(", "Expressao", ")"], ["ID"], ["CTE"]]
 }
 
 # # exemplo slide

@@ -330,7 +330,7 @@ class Compiler:
                 if self.atom.tipo == CONST.FINAL:
                     estado = 8
                 else:
-                    self.esperado("END OF FILE")
+                    # self.esperado("END OF FILE")
                     # estado = 10
                     estado = 8
             elif estado == 9:
@@ -880,13 +880,11 @@ class Compiler:
                     estado = 81
                 else:
                     self.__novo_atomo()
-        # if ret == 0:
-        #     print(ret)
 
         return ret
 
 compilador = Compiler()
-compilador.compile("ex1_input.in")
+compilador.compile("exemplos/input1.txt")
 
 print("Log do analisador léxico\n")
 pprint(compilador.log_lexic)

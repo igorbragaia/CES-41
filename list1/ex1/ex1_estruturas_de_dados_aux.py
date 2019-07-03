@@ -56,4 +56,4 @@ class TabelaDeSimbolos():
 
     def print(self):
         for simb in self.hash.values():
-            self.__print(simb.cadeia + ", " + simb.tipo_id + ", " + simb.tipo_var + ", " + str(simb.inic) + ", " + str(simb.ref) + ", " )
+            self.__print(simb.cadeia + ", " + simb.tipo_id + ", " + simb.tipo_var + ", inic=" + str(simb.inic) + ", ref=" + str(simb.ref) )

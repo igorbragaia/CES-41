@@ -2684,7 +2684,7 @@ void VerificaInicRef () {
 	for (i = 0; i < NCLASSHASH; i++)
 		if (tabsimb[i]) {
 			for (s = tabsimb[i]; s!=NULL; s = s->prox)
-				if (s->inic == 0 && s->ref == 0)
+				if ((s->tid == IDVAR_GLOBAL || s->tid == IDVAR_LOCAL) && s->inic == 0 && s->ref == 0)
           printf ("%s, ", s->cadeia);
 		}
   printf("\n/*************************************************************/\n");
@@ -2692,7 +2692,7 @@ void VerificaInicRef () {
 	for (i = 0; i < NCLASSHASH; i++)
 		if (tabsimb[i]) {
 			for (s = tabsimb[i]; s!=NULL; s = s->prox)
-				if (s->inic == 0 && s->ref != 0)
+				if ((s->tid == IDVAR_GLOBAL || s->tid == IDVAR_LOCAL) && s->inic == 0 && s->ref != 0)
           printf ("%s, ", s->cadeia);
 		}    
   printf("\n/*************************************************************/\n");
@@ -2700,7 +2700,7 @@ void VerificaInicRef () {
 	for (i = 0; i < NCLASSHASH; i++)
 		if (tabsimb[i]) {
 			for (s = tabsimb[i]; s!=NULL; s = s->prox)
-				if (s->inic != 0 && s->ref == 0)
+				if ((s->tid == IDVAR_GLOBAL || s->tid == IDVAR_LOCAL) && s->inic != 0 && s->ref == 0)
           printf ("%s, ", s->cadeia);
 		}      
   printf("\n/*************************************************************/\n");

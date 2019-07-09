@@ -167,20 +167,20 @@ void NaoDeclarado (char *);
 %token INVAL
 %token COMMENT
 %%
-Prog			:  {InicTabSimb ();}	PROGRAM {printf("program ");}  ID {printf("%s",yylval.string); InsereSimb (yylval.string, IDPROG, NAOVAR);} OPBRACE {printf("\{\n");}  GlobDecls  Functions CLBRACE {printf("\}\n");} {ImprimeTabSimb (); VerificaInicRef();}
-GlobDecls 	:	   |  GLOBAL {printf("global"); tid = IDVAR_GLOBAL;} COLON {printf(":\n");tab++;}  DeclList {tab--;}
-DeclList		:	Declaration  |  DeclList  Declaration
-Declaration 	:	Type  ElemList  SCOLON {printf(";\n");}
-Type			: 	INT {tabular();printf("int "); tipocorrente=INTEIRO;} |  FLOAT {tabular();printf("float "); tipocorrente=FLOAT;} |  CHAR {tabular();printf("char "); tipocorrente=CARACTERE;} |  LOGIC {tabular();printf("logic "); tipocorrente=LOGICO;} |  VOID {tabular();printf("void ");}
-ElemList    	:	Elem  |  ElemList  COMMA {printf(", ");} Elem
-Elem        	:	ID {printf("%s",yylval.string); if(ProcuraSimb(yylval.string, tid) != NULL) DeclaracaoRepetida(yylval.string); else InsereSimb(yylval.string, tid, tipocorrente);}  Dims
+Prog			:  		{InicTabSimb ();}	PROGRAM {printf("program ");}  ID {printf("%s",yylval.string); InsereSimb (yylval.string, IDPROG, NAOVAR);} OPBRACE {printf("\{\n");}  GlobDecls  Functions CLBRACE {printf("\}\n");} {ImprimeTabSimb (); VerificaInicRef();}
+GlobDecls 		:	   |  GLOBAL {printf("global"); tid = IDVAR_GLOBAL;} COLON {printf(":\n");tab++;}  DeclList {tab--;}
+DeclList		:		Declaration  |  DeclList  Declaration
+Declaration 	:		Type  ElemList  SCOLON {printf(";\n");}
+Type			: 		INT {tabular();printf("int "); tipocorrente=INTEIRO;} |  FLOAT {tabular();printf("float "); tipocorrente=FLOAT;} |  CHAR {tabular();printf("char "); tipocorrente=CARACTERE;} |  LOGIC {tabular();printf("logic "); tipocorrente=LOGICO;} |  VOID {tabular();printf("void ");}
+ElemList    	:		Elem  |  ElemList  COMMA {printf(", ");} Elem
+Elem        	:		ID {printf("%s",yylval.string); if(ProcuraSimb(yylval.string, tid) != NULL) DeclaracaoRepetida(yylval.string); else InsereSimb(yylval.string, tid, tipocorrente);}  Dims
 Dims			:	   |  OPBRAK {printf("[");} DimList  CLBRAK {printf("]");}
-DimList	    	: 	INTCT  {printf("%d",yylval.valor);} |  DimList  COMMA {printf(", ");} INTCT {printf("%d",yylval.valor);}
+DimList	    	: 		INTCT  {printf("%d",yylval.valor);} |  DimList  COMMA {printf(", ");} INTCT {printf("%d",yylval.valor);}
 Functions		:   	FUNCTIONS {printf("functions");} COLON {printf(":\n");}    FuncList
 FuncList		:   	Function   |   FuncList  Function
-Function		:	Header  OPBRACE {printf("\{\n");} LocDecls  Stats  CLBRACE {printf("\}\n"); ApagarVariaveis(IDVAR_LOCAL);}
-Header		:   	MAIN {printf("main");}  |   Type  ID {tid=IDVAR_FUNC; printf("%s",yylval.string); if(ProcuraSimb(yylval.string, tid) != NULL) DeclaracaoRepetida(yylval.string); else InsereSimb(yylval.string, tid, NAOVAR);} OPPAR {printf("\(");}  Params  CLPAR {printf("\)");}
-Params		:   	    |   ParamList
+Function		:		Header  OPBRACE {printf("\{\n");} LocDecls  Stats  CLBRACE {printf("\}\n"); ApagarVariaveis(IDVAR_LOCAL);}
+Header			:   	MAIN {printf("main");}  |   Type  ID {tid=IDVAR_FUNC; printf("%s",yylval.string); if(ProcuraSimb(yylval.string, tid) != NULL) DeclaracaoRepetida(yylval.string); else InsereSimb(yylval.string, tid, NAOVAR);} OPPAR {printf("\(");}  Params  CLPAR {printf("\)");}
+Params			:   	    |   ParamList
 ParamList   	:   	Parameter  |  ParamList  COMMA {printf(", ");}  Parameter
 Parameter   	:   	Type  ID {printf("%s",yylval.string);}
 LocDecls		:   	    |   LOCAL {printf("local ");tab++; tid = IDVAR_LOCAL;}  COLON {printf(":\n");}   DeclList {tab--;}
@@ -190,22 +190,22 @@ Statement   	:   	CompStat  | {tabular();} IfStat  | {tabular();}  WhileStat  | 
             	|   	{tabular();} ForStat  |  {tabular();} ReadStat  |  {tabular();} WriteStat  |  {tabular();} AssignStat
             	|   	{tabular();} CallStat  |  {tabular();} ReturnStat  |  SCOLON {printf(";\n");}
 CompStat		:   	OPBRACE {printf("\{\n");} {tab++;}StatList{tab--;}  CLBRACE {tabular();printf("\}\n");}
-IfStat		:   	IF {printf("if");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");} Statement ElseStat
+IfStat			:   	IF {printf("if");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");} Statement ElseStat
 ElseStat		:	   |  ELSE {tabular();printf("else");} {tab++;}Statement{tab--;}
-WhileStat   	:	WHILE {printf("while");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  Statement
+WhileStat   	:		WHILE {printf("while");} OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  Statement
 DoStat  		:   	DO  Statement  WHILE  OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  					SCOLON {printf(";\n");}
 ForStat	    	:   	FOR {printf("for");} OPPAR {printf("\(");}  Variable  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";");}
-			Expression  SCOLON {printf(";");}  Variable  ASSIGN {printf("<-");}  Expression
-			CLPAR {printf("\)");} Statement
-ReadStat   	:   	READ {printf("read");}  OPPAR {printf("\(");}  ReadList  CLPAR {printf("\)");}  SCOLON {printf(";\n");}
+						Expression  SCOLON {printf(";");}  Variable  ASSIGN {printf("<-");}  Expression
+						CLPAR {printf("\)");} Statement
+ReadStat   		:   	READ {printf("read");}  OPPAR {printf("\(");}  ReadList  CLPAR {printf("\)");}  SCOLON {printf(";\n");}
 ReadList		:   	Variable  |  ReadList {printf("read");}  COMMA {printf(", ");}  Variable
-WriteStat   	:	WRITE {printf("write");}  OPPAR {printf("\(");}  WriteList  CLPAR {printf("\)");}  SCOLON {printf(";\n");}
-WriteList		:	WriteElem  |  WriteList  COMMA {printf(", ");}  WriteElem
+WriteStat   	:		WRITE {printf("write");}  OPPAR {printf("\(");}  WriteList  CLPAR {printf("\)");}  SCOLON {printf(";\n");}
+WriteList		:		WriteElem  |  WriteList  COMMA {printf(", ");}  WriteElem
 WriteElem		:   	STRING {printf("%s",yylval.string);} |  Expression
 CallStat		:   	CALL {printf("call ");}  FuncCall  SCOLON {printf(";\n");}
 FuncCall		:   	ID {printf("%s",yylval.string);} OPPAR {printf("\(");}  Arguments  CLPAR {printf("\)");}
 Arguments		:	   |  ExprList
-ReturnStat  	:	RETURN {printf("return ");}  SCOLON {printf(";\n");}  |  RETURN {printf("return ");} Expression  SCOLON {printf(";\n");}
+ReturnStat  	:		RETURN {printf("return ");}  SCOLON {printf(";\n");}  |  RETURN {printf("return ");} Expression  SCOLON {printf(";\n");}
 AssignStat  	:   	Variable {if  (yylval.simb != NULL) yylval.simb->inic = yylval.simb->ref = VERDADE;}  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";\n");}
 ExprList		:   	Expression  |  ExprList  COMMA {printf(", ");}  Expression
 Expression  	:   	AuxExpr1  |  Expression  OR {printf(" | ");}  AuxExpr1
@@ -376,7 +376,7 @@ void VerificaInicRef () {
 	for (i = 0; i < NCLASSHASH; i++)
 		if (tabsimb[i]) {
 			for (s = tabsimb[i]; s!=NULL; s = s->prox)
-				if (s->inic == 0 && s->ref == 0)
+				if ((s->tid == IDVAR_GLOBAL || s->tid == IDVAR_LOCAL) && s->inic == 0 && s->ref == 0)
           printf ("%s, ", s->cadeia);
 		}
   printf("\n/*************************************************************/\n");
@@ -384,7 +384,7 @@ void VerificaInicRef () {
 	for (i = 0; i < NCLASSHASH; i++)
 		if (tabsimb[i]) {
 			for (s = tabsimb[i]; s!=NULL; s = s->prox)
-				if (s->inic == 0 && s->ref != 0)
+				if ((s->tid == IDVAR_GLOBAL || s->tid == IDVAR_LOCAL) && s->inic == 0 && s->ref != 0)
           printf ("%s, ", s->cadeia);
 		}    
   printf("\n/*************************************************************/\n");
@@ -392,7 +392,7 @@ void VerificaInicRef () {
 	for (i = 0; i < NCLASSHASH; i++)
 		if (tabsimb[i]) {
 			for (s = tabsimb[i]; s!=NULL; s = s->prox)
-				if (s->inic != 0 && s->ref == 0)
+				if ((s->tid == IDVAR_GLOBAL || s->tid == IDVAR_LOCAL) && s->inic != 0 && s->ref == 0)
           printf ("%s, ", s->cadeia);
 		}      
   printf("\n/*************************************************************/\n");

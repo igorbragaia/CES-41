@@ -244,7 +244,7 @@ Term  	    	:   	Factor  |  Term  MULTOP {
         break;
     };
 } Factor
-Factor		:   	VariableVariable {if(yylval.simb != NULL)  yylval.simb->ref=VERDADE;} 
+Factor		:   	Variable {if(yylval.simb != NULL)  yylval.simb->ref=VERDADE;} 
                 |  INTCT  {printf("%d",yylval.valor);} 
                 |  FLOATCT {printf("%f",yylval.valreal);}  
                 |  CHARCT {printf("%s",yylval.string);}

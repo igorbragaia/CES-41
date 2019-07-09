@@ -39,6 +39,7 @@ static int input();
 #define 	IDPROG			1
 #define 	IDVAR_LOCAL		2
 #define 	IDVAR_GLOBAL	3
+#define		IDVAR_FUNC		4
 
 /*  Definicao dos tipos de variaveis   */
 
@@ -56,7 +57,7 @@ static int input();
 
 /*  Strings para nomes dos tipos de identificadores  */
 
-char *nometipid[4] = {" ", "IDPROG", "IDVAR_LOCAL", "IDVAR_GLOBAL"};
+char *nometipid[4] = {" ", "IDPROG", "IDVAR_LOCAL", "IDVAR_GLOBAL", "IDVAR_GLOBAL"};
 
 /*  Strings para nomes dos tipos de variaveis  */
 
@@ -178,7 +179,7 @@ DimList	    	: 	INTCT  {printf("%d",yylval.valor);} |  DimList  COMMA {printf(",
 Functions		:   	FUNCTIONS {printf("functions");} COLON {printf(":\n");}    FuncList
 FuncList		:   	Function   |   FuncList  Function
 Function		:	Header  OPBRACE {printf("\{\n");} LocDecls  Stats  CLBRACE {printf("\}\n"); ApagarVariaveis(IDVAR_LOCAL);}
-Header		:   	MAIN {printf("main");}  |   Type  ID {printf("%s",yylval.string);} OPPAR {printf("\(");}  Params  CLPAR {printf("\)");}
+Header		:   	MAIN {printf("main");}  |   Type  ID {tid=IDVAR_FUNC; printf("%s",yylval.string); if(ProcuraSimb(yylval.string, tid) != NULL) DeclaracaoRepetida(yylval.string); else InsereSimb(yylval.string, tid, NAOVAR);} OPPAR {printf("\(");}  Params  CLPAR {printf("\)");}
 Params		:   	    |   ParamList
 ParamList   	:   	Parameter  |  ParamList  COMMA {printf(", ");}  Parameter
 Parameter   	:   	Type  ID {printf("%s",yylval.string);}

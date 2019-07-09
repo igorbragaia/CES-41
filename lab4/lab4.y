@@ -99,6 +99,7 @@ simbolo ProcuraSimb (char *, int);
 void DeclaracaoRepetida (char *);
 void TipoInadequado (char *);
 void NaoDeclarado (char *);
+void DimInvalida (void);
 %}
 
 /* Definicao do tipo de yylval e dos atributos dos nao terminais */
@@ -175,7 +176,7 @@ Type			: 		INT {tabular();printf("int "); tipocorrente=INTEIRO;} |  FLOAT {tabul
 ElemList    	:		Elem  |  ElemList  COMMA {printf(", ");} Elem
 Elem        	:		ID {printf("%s",yylval.string); if(ProcuraSimb(yylval.string, tid) != NULL) DeclaracaoRepetida(yylval.string); else InsereSimb(yylval.string, tid, tipocorrente);}  Dims
 Dims			:	   |  OPBRAK {printf("[");} DimList  CLBRAK {printf("]");}
-DimList	    	: 		INTCT  {printf("%d",yylval.valor);} |  DimList  COMMA {printf(", ");} INTCT {printf("%d",yylval.valor);}
+DimList	    	: 		INTCT  {printf("%d",yylval.valor); if(yylval.valor < 0) DimInvalida(); } |  DimList  COMMA {printf(", ");} INTCT {printf("%d",yylval.valor);  if(yylval.valor < 0) DimInvalida();}
 Functions		:   	FUNCTIONS {printf("functions");} COLON {printf(":\n");}    FuncList
 FuncList		:   	Function   |   FuncList  Function
 Function		:		Header  OPBRACE {printf("\{\n");} LocDecls  Stats  CLBRACE {printf("\}\n"); ApagarVariaveis(IDVAR_LOCAL);}
@@ -412,4 +413,6 @@ void TipoInadequado (char *s) {
   printf ("\n\n***** Identificador de Tipo Inadequado: %s *****\n\n", s);
 }
 
-
+void DimInvalida () {
+	printf ("\n\n*****Dimensao invalida, valor negativo!*****\n\n");
+}

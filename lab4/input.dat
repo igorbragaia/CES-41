@@ -44,31 +44,6 @@ return posic;
 
 } /* Fim da funcao Procura */
 
-/* Funcao para inserir uma palavra na tabela de palavras */
-
-void Inserir (int posic) {
-
-local:
-int i, j; logic fim;
-statements:
-ntab <- ntab + 1;
-for (i <- ntab; i >= posic+1; i <- i-1) {
-fim <- false;
-for (j <- 0; !fim; j <- j+1) {
-nomes[i,j] <- nomes[i-1,j];
-if (nomes[i,j] = '\0') fim <- true;
-}
-nocorr[i] <- nocorr[i-1];
-}
-fim <- false;
-for (j <- 0; !fim; j <- j+1) {
-nomes[posic,j] <- palavra[j];
-if (palavra[j] = '\0') fim <- true;
-}
-nocorr[posic] <- 1;
-
-} /* Fim da funcao Inserir */
-
 /* Funcao para escrever a tabela de palavras */
 
 void ExibirTabela () {

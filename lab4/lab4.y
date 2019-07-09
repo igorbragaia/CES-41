@@ -89,6 +89,7 @@ int tipocorrente;
 
 void InicTabSimb (void);
 void ImprimeTabSimb (void);
+void VerificaInicRef (void);
 simbolo InsereSimb (char *, int, int);
 int hash (char *);
 simbolo ProcuraSimb (char *);
@@ -105,7 +106,10 @@ void NaoDeclarado (char *);
 	int atr;
 	int valor;
 	float valreal;
+  simbolo simb;
 };
+
+%type <simb> Variable
 
 // reserved words
 %token CALL
@@ -160,7 +164,7 @@ void NaoDeclarado (char *);
 %token INVAL
 %token COMMENT
 %%
-Prog			:  {InicTabSimb ();}	PROGRAM {printf("program ");}  ID {printf("%s",yylval.string); InsereSimb (yylval.string, IDPROG, NAOVAR);} OPBRACE {printf("\{\n");}  GlobDecls  Functions CLBRACE {printf("\}\n");} {ImprimeTabSimb ();}
+Prog			:  {InicTabSimb ();}	PROGRAM {printf("program ");}  ID {printf("%s",yylval.string); InsereSimb (yylval.string, IDPROG, NAOVAR);} OPBRACE {printf("\{\n");}  GlobDecls  Functions CLBRACE {printf("\}\n");} {ImprimeTabSimb (); VerificaInicRef();}
 GlobDecls 	:	   |  GLOBAL {printf("global");} COLON {printf(":\n");tab++;}  DeclList {tab--;}
 DeclList		:	Declaration  |  DeclList  Declaration
 Declaration 	:	Type  ElemList  SCOLON {printf(";\n");}
@@ -199,7 +203,7 @@ CallStat		:   	CALL {printf("call ");}  FuncCall  SCOLON {printf(";\n");}
 FuncCall		:   	ID {printf("%s",yylval.string);} OPPAR {printf("\(");}  Arguments  CLPAR {printf("\)");}
 Arguments		:	   |  ExprList
 ReturnStat  	:	RETURN {printf("return ");}  SCOLON {printf(";\n");}  |  RETURN {printf("return ");} Expression  SCOLON {printf(";\n");}
-AssignStat  	:   	Variable  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";\n");}
+AssignStat  	:   	Variable {if  (yylval.simb != NULL) yylval.simb->inic = yylval.simb->ref = VERDADE;}  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";\n");}
 ExprList		:   	Expression  |  ExprList  COMMA {printf(", ");}  Expression
 Expression  	:   	AuxExpr1  |  Expression  OR {printf(" | ");}  AuxExpr1
 AuxExpr1    	:   	AuxExpr2  |  AuxExpr1  AND {printf(" & ");} AuxExpr2
@@ -240,10 +244,23 @@ Term  	    	:   	Factor  |  Term  MULTOP {
         break;
     };
 } Factor
-Factor		:   	Variable  |  INTCT  {printf("%d",yylval.valor);} |  FLOATCT {printf("%f",yylval.valreal);}  |  CHARCT {printf("%s",yylval.string);}
-            	|   	TRUE {printf("true");} |  FALSE {printf("false");}  |  NEG {printf("~");}  Factor
-            	|   	OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  |  FuncCall
-Variable		:   	ID {printf("%s",$1);} Subscripts
+Factor		:   	VariableVariable {if(yylval.simb != NULL)  yylval.simb->ref=VERDADE;} 
+                |  INTCT  {printf("%d",yylval.valor);} 
+                |  FLOATCT {printf("%f",yylval.valreal);}  
+                |  CHARCT {printf("%s",yylval.string);}
+              	|  TRUE {printf("true");} 
+                |  FALSE {printf("false");}  
+                |  NEG {printf("~");}  Factor
+              	|  OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  
+                |  FuncCall
+Variable		:   	ID {
+                        printf("%s",$1); 
+                        simb = ProcuraSimb ($1);
+                        if (simb == NULL) 
+                          NaoDeclarado ($1);                      
+                        else if (simb->tid != IDVAR) TipoInadequado ($1);
+                        yylval.simb = simb;
+                      } Subscripts
 Subscripts   	:	   |  OPBRAK {printf("[");}  SubscrList  CLBRAK {printf("]");}
 SubscrList	:   	AuxExpr4   |   SubscrList  COMMA {printf(", ");}  AuxExpr4
 %%
@@ -321,6 +338,37 @@ void ImprimeTabSimb () {
 				printf(")\n");
 			}
 		}
+}
+
+/* VerificaInicRef: Checa e avisa os casos de identificadores não-inicializados e/ou não-referenciados  */
+
+void VerificaInicRef () {
+	int i; simbolo s;
+  printf("\n\n/*************************************************************/\n");
+	printf ("   SIMBOLOS NAO INICIALIZADOS E NAO REFERENCIADOS:\n\n");
+	for (i = 0; i < NCLASSHASH; i++)
+		if (tabsimb[i]) {
+			for (s = tabsimb[i]; s!=NULL; s = s->prox)
+				if (s->inic == 0 && s->ref == 0)
+          printf ("%s, ", s->cadeia);
+		}
+  printf("\n/*************************************************************/\n");
+	printf ("   SIMBOLOS NAO INICIALIZADOS MAS REFERENCIADOS:\n\n");
+	for (i = 0; i < NCLASSHASH; i++)
+		if (tabsimb[i]) {
+			for (s = tabsimb[i]; s!=NULL; s = s->prox)
+				if (s->inic == 0 && s->ref != 0)
+          printf ("%s, ", s->cadeia);
+		}    
+  printf("\n/*************************************************************/\n");
+	printf ("   SIMBOLOS INICIALIZADOS MAS NÃO REFERENCIADOS:\n\n");
+	for (i = 0; i < NCLASSHASH; i++)
+		if (tabsimb[i]) {
+			for (s = tabsimb[i]; s!=NULL; s = s->prox)
+				if (s->inic != 0 && s->ref == 0)
+          printf ("%s, ", s->cadeia);
+		}      
+  printf("\n/*************************************************************/\n");
 }
 
 /*  Mensagens de erros semanticos  */

@@ -44,59 +44,16 @@ return posic;
 
 } /* Fim da funcao Procura */
 
-/* Funcao para escrever a tabela de palavras */
+/* Funcao para procurar uma palavra na tabela de palavras */
 
-void ExibirTabela () {
-
-local:
-int i; logic fim;
-statements:
-write (" ", "Palavra ",
-" Num. de ocorr.");
-for (i <- 1; i <= 50; i <- i+1) write ("-");
-for (i <- 1; i <= ntab; i <- i+1) {
-write ("\n "); fim <- false;
-for (j <- 0; !fim; j <- j+1) {
-if (nomes[i,j] = '\0') fim <- true;
-else write (nomes[i,j]);
-}
-write (" | ", nocorr[i]);
-}
-
-} /* Fim da funcao ExibirTabela */
-
-
-/* Modulo principal */
-
-main {
+int ProcuraX () {
 
 local:
-int i, posic;
-char c; logic fim;
+int i;
 statements:
-ntab <- 0;
-write ("Nova palavra? (s/n): ");
-read (c);
-while (c = 's' || c = 'S') {
-write ("\nDigite a palavra: ");
-fim <- false;
-for (i <- 0; !fim; i <- i+1) {
-read (palavra[i]);
-if (palavra[i] = '\n') {
-fim <- true;
-palavra[i] <- '\0';
-}
-}
-posic <- Procura ();
-if (posic > 0)
-nocorr[posic] <- nocorr[posic] + 1;
-else
-call Inserir (~posic, i);
-write ("\n\nNova palavra? (s/n): ");
-read (c);
-}
-call ExibirTabela ();
+i<-50;
+return i;
 
-} /* Fim da funcao main */
+} /* Fim da funcao Procura */
 
 } /* Fim do programa AnaliseDeTexto */

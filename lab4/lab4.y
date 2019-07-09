@@ -36,15 +36,16 @@ static int input();
 
 /*   Definicao dos tipos de identificadores   */
 
-#define 	IDPROG		1
-#define 	IDVAR		2
+#define 	IDPROG			1
+#define 	IDVAR_LOCAL		2
+#define 	IDVAR_GLOBAL	3
 
 /*  Definicao dos tipos de variaveis   */
 
 #define 	NAOVAR		0
 #define 	INTEIRO		1
 #define 	LOGICO		2
-#define 	REAL			3
+#define 	REAL		3
 #define 	CARACTERE	4
 
 /*   Definicao de outras constantes   */
@@ -55,7 +56,7 @@ static int input();
 
 /*  Strings para nomes dos tipos de identificadores  */
 
-char *nometipid[3] = {" ", "IDPROG", "IDVAR"};
+char *nometipid[4] = {" ", "IDPROG", "IDVAR_LOCAL", "IDVAR_GLOBAL"};
 
 /*  Strings para nomes dos tipos de variaveis  */
 
@@ -80,6 +81,7 @@ struct celsimb {
 simbolo tabsimb[NCLASSHASH];
 simbolo simb;
 
+int tid;
 int tipocorrente;
 
 /*
@@ -92,7 +94,7 @@ void ImprimeTabSimb (void);
 void VerificaInicRef (void);
 simbolo InsereSimb (char *, int, int);
 int hash (char *);
-simbolo ProcuraSimb (char *);
+simbolo ProcuraSimb (char *, int);
 void DeclaracaoRepetida (char *);
 void TipoInadequado (char *);
 void NaoDeclarado (char *);
@@ -102,11 +104,11 @@ void NaoDeclarado (char *);
 
 %union {
 	char string[100];
-  char carac;
+  	char carac;
 	int atr;
 	int valor;
 	float valreal;
-  simbolo simb;
+  	simbolo simb;
 };
 
 %type <simb> Variable
@@ -165,22 +167,22 @@ void NaoDeclarado (char *);
 %token COMMENT
 %%
 Prog			:  {InicTabSimb ();}	PROGRAM {printf("program ");}  ID {printf("%s",yylval.string); InsereSimb (yylval.string, IDPROG, NAOVAR);} OPBRACE {printf("\{\n");}  GlobDecls  Functions CLBRACE {printf("\}\n");} {ImprimeTabSimb (); VerificaInicRef();}
-GlobDecls 	:	   |  GLOBAL {printf("global");} COLON {printf(":\n");tab++;}  DeclList {tab--;}
+GlobDecls 	:	   |  GLOBAL {printf("global"); tid = IDVAR_GLOBAL;} COLON {printf(":\n");tab++;}  DeclList {tab--;}
 DeclList		:	Declaration  |  DeclList  Declaration
 Declaration 	:	Type  ElemList  SCOLON {printf(";\n");}
 Type			: 	INT {tabular();printf("int "); tipocorrente=INTEIRO;} |  FLOAT {tabular();printf("float "); tipocorrente=FLOAT;} |  CHAR {tabular();printf("char "); tipocorrente=CARACTERE;} |  LOGIC {tabular();printf("logic "); tipocorrente=LOGICO;} |  VOID {tabular();printf("void ");}
 ElemList    	:	Elem  |  ElemList  COMMA {printf(", ");} Elem
-Elem        	:	ID {printf("%s",yylval.string); if(ProcuraSimb(yylval.string)!=NULL) DeclaracaoRepetida(yylval.string); else InsereSimb(yylval.string, IDVAR, tipocorrente);}  Dims
+Elem        	:	ID {printf("%s",yylval.string); if(ProcuraSimb(yylval.string, tid) != NULL) DeclaracaoRepetida(yylval.string); else InsereSimb(yylval.string, tid, tipocorrente);}  Dims
 Dims			:	   |  OPBRAK {printf("[");} DimList  CLBRAK {printf("]");}
 DimList	    	: 	INTCT  {printf("%d",yylval.valor);} |  DimList  COMMA {printf(", ");} INTCT {printf("%d",yylval.valor);}
 Functions		:   	FUNCTIONS {printf("functions");} COLON {printf(":\n");}    FuncList
 FuncList		:   	Function   |   FuncList  Function
-Function		:	Header  OPBRACE {printf("\{\n");} LocDecls  Stats  CLBRACE {printf("\}\n");}
+Function		:	Header  OPBRACE {printf("\{\n");} LocDecls  Stats  CLBRACE {printf("\}\n"); ApagarVariaveis(IDVAR_LOCAL);}
 Header		:   	MAIN {printf("main");}  |   Type  ID {printf("%s",yylval.string);} OPPAR {printf("\(");}  Params  CLPAR {printf("\)");}
 Params		:   	    |   ParamList
 ParamList   	:   	Parameter  |  ParamList  COMMA {printf(", ");}  Parameter
 Parameter   	:   	Type  ID {printf("%s",yylval.string);}
-LocDecls		:   	    |   LOCAL {printf("local ");tab++;}  COLON {printf(":\n");}   DeclList {tab--;}
+LocDecls		:   	    |   LOCAL {printf("local ");tab++; tid = IDVAR_LOCAL;}  COLON {printf(":\n");}   DeclList {tab--;}
 Stats       	:   	STATEMENTS {printf("statements");}  COLON {printf(":\n");tab++;}   StatList {tab--;}
 StatList		:	   |  StatList  Statement
 Statement   	:   	CompStat  | {tabular();} IfStat  | {tabular();}  WhileStat  |  {tabular();} DoStat
@@ -255,10 +257,10 @@ Factor		:   	Variable {if(yylval.simb != NULL)  yylval.simb->ref=VERDADE;}
                 |  FuncCall
 Variable		:   	ID {
                         printf("%s",$1); 
-                        simb = ProcuraSimb ($1);
+                        simb = ProcuraSimb ($1, -1);
                         if (simb == NULL) 
                           NaoDeclarado ($1);                      
-                        else if (simb->tid != IDVAR) TipoInadequado ($1);
+                        else if (simb->tid != IDVAR_GLOBAL && simb->tid != IDVAR_LOCAL) TipoInadequado ($1);
                         yylval.simb = simb;
                       } Subscripts
 Subscripts   	:	   |  OPBRAK {printf("[");}  SubscrList  CLBRAK {printf("]");}
@@ -285,12 +287,34 @@ void InicTabSimb () {
 	Caso contrario, retorna NULL.
  */
 
-simbolo ProcuraSimb (char *cadeia) {
+simbolo ProcuraSimb (char *cadeia, int tid_filtro) {
 	simbolo s; int i;
 	i = hash (cadeia);
-	for (s = tabsimb[i]; (s!=NULL) && strcmp(cadeia, s->cadeia); 
-		s = s->prox);
+	s = tabsimb[i];
+	while(s != NULL) {
+		if(strcmp(cadeia, s->cadeia) == 0 && (tid_filtro == -1 || tid_filtro == s->tid))
+			return s;
+		s = s->prox;
+	}
+	return NULL;
+	if(s!=NULL)
+		printf("\ncadeia=%s, s->cadeia=%s, tid=%d, local tid=%d\n",cadeia, s->cadeia, s->tid, tid_filtro);
 	return s;
+}
+
+void ApagarVariaveis (int tid) {
+	simbolo s;
+	int i;
+	for ( i = 0; i < NCLASSHASH; i++) {
+		while (tabsimb[i] != NULL && tabsimb[i]->tid == tid)
+			tabsimb[i] = tabsimb[i]->prox;
+		s = tabsimb[i];
+		while(s != NULL) {
+			if (s->prox != NULL && s->prox->tid == tid)
+				s->prox = s->prox->prox;
+			s = s->prox;
+		}
+	}
 }
 
 /*
@@ -305,9 +329,12 @@ simbolo InsereSimb (char *cadeia, int tid, int tvar) {
 	s = tabsimb[i] = (simbolo) malloc (sizeof (celsimb));
 	s->cadeia = (char*) malloc ((strlen(cadeia)+1) * sizeof(char));
 	strcpy (s->cadeia, cadeia);
-	s->tid = tid;		s->tvar = tvar;
-	s->inic = FALSO;	s->ref = FALSO;
-	s->prox = aux;	return s;
+	s->tid = tid;		
+	s->tvar = tvar;
+	s->inic = FALSO;	
+	s->ref = FALSO;
+	s->prox = aux;	
+	return s;
 }
 
 /*
@@ -332,9 +359,8 @@ void ImprimeTabSimb () {
 			printf ("Classe %d:\n", i);
 			for (s = tabsimb[i]; s!=NULL; s = s->prox){
 				printf ("  (%s, %s", s->cadeia,  nometipid[s->tid]);
-				if (s->tid == IDVAR)
-					printf (", %s, %d, %d", 
-						nometipvar[s->tvar], s->inic, s->ref);
+				if (s->tid == IDVAR_GLOBAL || s->tid == IDVAR_LOCAL)
+					printf (", %s, %d, %d", nometipvar[s->tvar], s->inic, s->ref);
 				printf(")\n");
 			}
 		}

@@ -48,6 +48,7 @@ static int input();
 #define 	LOGICO		2
 #define 	REAL		3
 #define 	CARACTERE	4
+#define		INVALIDO	5
 
 /*   Definicao de outras constantes   */
 
@@ -57,13 +58,11 @@ static int input();
 
 /*  Strings para nomes dos tipos de identificadores  */
 
-char *nometipid[4] = {" ", "IDPROG", "IDVAR_LOCAL", "IDVAR_GLOBAL", "IDVAR_GLOBAL"};
+char *nometipid[5] = {" ", "IDPROG", "IDVAR_LOCAL", "IDVAR_GLOBAL", "IDVAR_GLOBAL"};
 
 /*  Strings para nomes dos tipos de variaveis  */
 
-char *nometipvar[5] = {"NAOVAR",
-	"INTEIRO", "LOGICO", "REAL", "CARACTERE"
-};
+char *nometipvar[6] = {"NAOVAR","INTEIRO", "LOGICO", "REAL", "CARACTERE", "INVALIDO"};
 
 /*    Declaracoes para a tabela de simbolos     */
 
@@ -84,6 +83,7 @@ simbolo simb;
 
 int tid;
 int tipocorrente;
+int atr;
 
 /*
 	Prototipos das funcoes para a tabela de simbolos
@@ -100,6 +100,7 @@ void DeclaracaoRepetida (char *);
 void TipoInadequado (char *);
 void NaoDeclarado (char *);
 void DimInvalida (void);
+void ApagarVariaveis (int);
 %}
 
 /* Definicao do tipo de yylval e dos atributos dos nao terminais */
@@ -110,6 +111,7 @@ void DimInvalida (void);
 	int atr;
 	int valor;
 	float valreal;
+	int expr;
   	simbolo simb;
 };
 
@@ -209,32 +211,32 @@ Arguments		:	   |  ExprList
 ReturnStat  	:		RETURN {printf("return ");}  SCOLON {printf(";\n");}  |  RETURN {printf("return ");} Expression  SCOLON {printf(";\n");}
 AssignStat  	:   	Variable {if  (yylval.simb != NULL) yylval.simb->inic = yylval.simb->ref = VERDADE;}  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";\n");}
 ExprList		:   	Expression  |  ExprList  COMMA {printf(", ");}  Expression
-Expression  	:   	AuxExpr1  |  Expression  OR {printf(" | ");}  AuxExpr1
+Expression  	:   	AuxExpr1  |  Expression  OR {printf(" | ");}  AuxExpr1 
 AuxExpr1    	:   	AuxExpr2  |  AuxExpr1  AND {printf(" & ");} AuxExpr2
 AuxExpr2    	:   	AuxExpr3  |  NOT {printf("!");} AuxExpr3
 AuxExpr3    	:   	AuxExpr4  |  AuxExpr4  RELOP {
-    switch($2){
+    switch(atr){
       case RELOP_1:
-        printf("<");
+        printf(" < ");
         break;
       case RELOP_2:
-        printf("<=");
+        printf(" <= ");
         break;
       case RELOP_3:
-        printf(">");
+        printf(" > ");
         break;
       case RELOP_4:
-        printf(">=");
+        printf(" >= ");
         break;
       case RELOP_5:
-        printf("=");
+        printf(" = ");
         break;
       case RELOP_6:
-        printf("!=");
+        printf(" != ");
         break;
     };
 } AuxExpr4
-AuxExpr4    	:	Term  |  AuxExpr4  ADOP {if($2 == ADOP_1) printf("+"); else printf("-"); } Term
+AuxExpr4    	:	 Term  |  AuxExpr4  ADOP {if($2 == ADOP_1) printf("+"); else printf("-"); } Term
 Term  	    	:   	Factor  |  Term  MULTOP {
     switch($2){
       case MULTOP_1:
@@ -249,11 +251,11 @@ Term  	    	:   	Factor  |  Term  MULTOP {
     };
 } Factor
 Factor		:   	Variable {if(yylval.simb != NULL)  yylval.simb->ref=VERDADE;} 
-                |  INTCT  {printf("%d",yylval.valor);} 
-                |  FLOATCT {printf("%f",yylval.valreal);}  
-                |  CHARCT {printf("%s",yylval.string);}
-              	|  TRUE {printf("true");} 
-                |  FALSE {printf("false");}  
+                |  INTCT  {printf("%d",yylval.valor); yylval.expr = INTEIRO;} 
+                |  FLOATCT {printf("%f",yylval.valreal); yylval.expr = REAL;}  
+                |  CHARCT {printf("%s",yylval.string);  yylval.expr = CARACTERE;}
+              	|  TRUE {printf("true");  yylval.expr = LOGICO;} 
+                |  FALSE {printf("false");  yylval.expr = LOGICO;}  
                 |  NEG {printf("~");}  Factor
               	|  OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  
                 |  FuncCall

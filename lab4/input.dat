@@ -6,7 +6,7 @@ program AnaliseDeTexto {
 /* Variaveis globais */
 
 global:
-char nomes[50,10], palavra[10];
+char nomes[50,10], palavra[10], p3[2];
 int ntab, nocorr[50];
 char c; logic fim;
 

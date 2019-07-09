@@ -215,41 +215,41 @@ Expression  	:   	AuxExpr1  |  Expression  OR {printf(" | ");}  AuxExpr1
 AuxExpr1    	:   	AuxExpr2  |  AuxExpr1  AND {printf(" & ");} AuxExpr2
 AuxExpr2    	:   	AuxExpr3  |  NOT {printf("!");} AuxExpr3
 AuxExpr3    	:   	AuxExpr4  |  AuxExpr4  RELOP {
-    switch(atr){
-      case RELOP_1:
-        printf(" < ");
-        break;
-      case RELOP_2:
-        printf(" <= ");
-        break;
-      case RELOP_3:
-        printf(" > ");
-        break;
-      case RELOP_4:
-        printf(" >= ");
-        break;
-      case RELOP_5:
-        printf(" = ");
-        break;
-      case RELOP_6:
-        printf(" != ");
-        break;
-    };
-} AuxExpr4
-AuxExpr4    	:	 Term  |  AuxExpr4  ADOP {if($2 == ADOP_1) printf("+"); else printf("-"); } Term
+														switch(atr){
+															case RELOP_1:
+																printf(" < ");
+																break;
+															case RELOP_2:
+																printf(" <= ");
+																break;
+															case RELOP_3:
+																printf(" > ");
+																break;
+															case RELOP_4:
+																printf(" >= ");
+																break;
+															case RELOP_5:
+																printf(" = ");
+																break;
+															case RELOP_6:
+																printf(" != ");
+																break;
+														};
+													} AuxExpr4
+AuxExpr4    	:	 Term  |  AuxExpr4  ADOP {if(atr == ADOP_1) printf("+"); else printf("-"); } Term
 Term  	    	:   	Factor  |  Term  MULTOP {
-    switch($2){
-      case MULTOP_1:
-        printf("*");
-        break;
-      case MULTOP_2:
-        printf("/");
-        break;
-      case MULTOP_3:
-        printf("%%");
-        break;
-    };
-} Factor
+													switch(atr){
+														case MULTOP_1:
+															printf("*");
+															break;
+														case MULTOP_2:
+															printf("/");
+															break;
+														case MULTOP_3:
+															printf("%%");
+															break;
+													};
+												} Factor
 Factor		:   	Variable {if(yylval.simb != NULL)  yylval.simb->ref=VERDADE;} 
                 |  INTCT  {printf("%d",yylval.valor); yylval.expr = INTEIRO;} 
                 |  FLOATCT {printf("%f",yylval.valreal); yylval.expr = REAL;}  
@@ -260,13 +260,13 @@ Factor		:   	Variable {if(yylval.simb != NULL)  yylval.simb->ref=VERDADE;}
               	|  OPPAR {printf("\(");}  Expression  CLPAR {printf("\)");}  
                 |  FuncCall
 Variable		:   	ID {
-                        printf("%s",$1); 
-                        simb = ProcuraSimb ($1, -1);
-                        if (simb == NULL) 
-                          NaoDeclarado ($1);                      
-                        else if (simb->tid != IDVAR_GLOBAL && simb->tid != IDVAR_LOCAL) TipoInadequado ($1);
-                        yylval.simb = simb;
-                      } Subscripts
+								printf("%s",$1); 
+								simb = ProcuraSimb ($1, -1);
+								if (simb == NULL) 
+								NaoDeclarado ($1);                      
+								else if (simb->tid != IDVAR_GLOBAL && simb->tid != IDVAR_LOCAL) TipoInadequado ($1);
+								yylval.simb = simb;
+							} Subscripts
 Subscripts   	:	   |  OPBRAK {printf("[");}  SubscrList  CLBRAK {printf("]");}
 SubscrList	:   	AuxExpr4   |   SubscrList  COMMA {printf(", ");}  AuxExpr4
 %%

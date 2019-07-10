@@ -113,6 +113,7 @@ void ApagarVariaveis (int);
 	int valor;
 	float valreal;
 	int expr;
+	int dimensoes;
   	simbolo simb;
 };
 
@@ -177,7 +178,7 @@ DeclList		:		Declaration  |  DeclList  Declaration
 Declaration 	:		Type  ElemList  SCOLON {printf(";\n");}
 Type			: 		INT {tabular();printf("int "); tipocorrente=INTEIRO;} |  FLOAT {tabular();printf("float "); tipocorrente=FLOAT;} |  CHAR {tabular();printf("char "); tipocorrente=CARACTERE;} |  LOGIC {tabular();printf("logic "); tipocorrente=LOGICO;} |  VOID {tabular();printf("void ");}
 ElemList    	:		Elem  |  ElemList  COMMA {printf(", ");} Elem
-Elem        	:		ID {printf("%s",yylval.string); if(ProcuraSimb(yylval.string, tid) != NULL) DeclaracaoRepetida(yylval.string); else InsereSimb(yylval.string, tid, tipocorrente);}  Dims
+Elem        	:		ID {printf("%s",yylval.string); if(ProcuraSimb(yylval.string, tid) != NULL) DeclaracaoRepetida(yylval.string); else InsereSimb(yylval.string, tid, tipocorrente);}  Dims 
 Dims			:	   |  OPBRAK {printf("[");} DimList  CLBRAK {printf("]");}
 DimList	    	: 		INTCT  {printf("%d",yylval.valor); if(yylval.valor < 0) DimInvalida(); } |  DimList  COMMA {printf(", ");} INTCT {printf("%d",yylval.valor);  if(yylval.valor < 0) DimInvalida();}
 Functions		:   	FUNCTIONS {printf("functions");} COLON {printf(":\n");}    FuncList

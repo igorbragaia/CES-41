@@ -84,6 +84,7 @@ simbolo simb;
 int tid;
 int tipocorrente;
 int atr;
+int tipo_do_lado_esquerdo, tipo_do_lado_direito;
 
 /*
 	Prototipos das funcoes para a tabela de simbolos
@@ -209,7 +210,26 @@ CallStat		:   	CALL {printf("call ");}  FuncCall  SCOLON {printf(";\n");}
 FuncCall		:   	ID {printf("%s",yylval.string);} OPPAR {printf("\(");}  Arguments  CLPAR {printf("\)");}
 Arguments		:	   |  ExprList
 ReturnStat  	:		RETURN {printf("return ");}  SCOLON {printf(";\n");}  |  RETURN {printf("return ");} Expression  SCOLON {printf(";\n");}
-AssignStat  	:   	Variable {if  (yylval.simb != NULL) yylval.simb->inic = yylval.simb->ref = VERDADE;}  ASSIGN {printf("<-");}  Expression  SCOLON {printf(";\n");}
+AssignStat  	:   	Variable { 
+									if  (yylval.simb != NULL) {
+										yylval.simb->inic = yylval.simb->ref = VERDADE;
+										tipo_do_lado_esquerdo = yylval.simb->tvar;
+									} else 
+										tipo_do_lado_esquerdo = -1;
+								 }  ASSIGN {printf("<-");}  Expression  SCOLON { 
+									 												printf(";\n"); 
+																					tipo_do_lado_direito = -1;
+																					if(yylval.expr < 10)  
+																						tipo_do_lado_direito = yylval.expr;
+																					else if(yylval.simb != NULL)
+																						tipo_do_lado_direito = yylval.simb->tvar;
+																					if( !((tipo_do_lado_esquerdo == INTEIRO && (tipo_do_lado_direito == INTEIRO || tipo_do_lado_direito == CARACTERE))
+																						|| (tipo_do_lado_esquerdo == REAL && (tipo_do_lado_direito == INTEIRO || tipo_do_lado_direito == REAL || tipo_do_lado_direito == CARACTERE))
+																						|| (tipo_do_lado_esquerdo == CARACTERE && (tipo_do_lado_direito == INTEIRO || tipo_do_lado_direito == CARACTERE))
+																						|| (tipo_do_lado_esquerdo == LOGICO && tipo_do_lado_direito == LOGICO))) {
+																							TipoInadequado("Tipo do lado esquerdo e lado direito incoerentes na atribuicao!");
+																						}
+																				}
 ExprList		:   	Expression  |  ExprList  COMMA {printf(", ");}  Expression
 Expression  	:   	AuxExpr1  |  Expression  OR {printf(" | ");}  AuxExpr1 
 AuxExpr1    	:   	AuxExpr2  |  AuxExpr1  AND {printf(" & ");} AuxExpr2

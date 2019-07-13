@@ -1,4 +1,6 @@
 from graphviz import Digraph
+from queue import Queue
+from pprint import pprint
 # esse codigo eh uma implementacao do algoritmo do slide 5c do prof Mokarzel
 
 
@@ -26,6 +28,24 @@ class Graph:
         self.add_node(to_node)
         self.graph[str(from_node)][str(to_node)] = label
 
+    def get_closures(self):
+        closures = {}
+        for node in self.graph:
+            closures[node] = self.get_closure(node)
+        return closures
+
+    def get_closure(self, node):
+        closure = [node]
+        queue = Queue(maxsize=10000)
+        queue.put(node)
+        while not queue.empty():
+            front = queue.get()
+            for neighbor in self.graph[front]:
+                if self.graph[front][neighbor] == "eps" and neighbor not in closure:
+                    closure.append(neighbor)
+                    queue.put(neighbor)
+        return closure
+
     def view(self):
         f = Digraph()
         f.attr(rankdir='LR', size='8,5')
@@ -46,6 +66,9 @@ prods = [
     Node(["F"], ["(", "E", ")"]),
     Node(["F"], ["id"]),
 ]
+
+
+
 
 prods_ext = []
 for prod in prods:
@@ -84,4 +107,5 @@ for prod in prods_ext:
                     graph.add_edge(prod, prod_transicao, "eps")
             i += 1
 
+pprint(graph.get_closures())
 graph.view()

@@ -36,8 +36,22 @@ producoes = {
     "T'": [["*", "F", "T'"], ["eps"]],
     "F": [["(", "E", ")"], ["id"]]
 }
+
+# questao 2 lista 2
+terminais = ["@", "+", "*", "(", ")", "a", ","]
+nao_terminais = ["E", "T", "F", "P", "L"]
+producoes = {
+    "E": [["E", "+", "T"], ["T"]],
+    "T": [["T", "*", "F"], ["F"]],
+    "F": [["P", "@", "F"], ["P"]],
+    "P": [["(", "E", ")"], ["a"], ["a", "(", "L", ")"]],
+    "L": [["L", ",", "E"], ["E"]]
+}
+
 primeiros = {}
 seguintes = {}
+
+
 
 
 # PRIMEIROS

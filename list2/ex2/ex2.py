@@ -20,10 +20,10 @@ class AfndNode:
 
 class AfdNode:
     def __init__(self, closure):
-        self.closure = closure
+        self.closure = sorted(closure)
 
     def __str__(self):
-        return self.closure
+        return ", ".join(self.closure)
 
 
 class Graph:
@@ -42,54 +42,64 @@ class Graph:
         self.graph[str(from_node)][str(to_node)] = label
 
     def get_afd(self):
-        tmp = Graph()
-        gotos = self.get_gotos()
-        for Ii in gotos["gotos"]:
-            for Ij in gotos["gotos"][Ii]:
-                tmp.add_edge(Ii, Ij, gotos["gotos"][Ii][Ij])
-
+        start = "E'->.E"
         afd = Graph()
-        queue = Queue(maxsize=10000)
-        queue.put(gotos["start"])
-        hash = {}
-        while not queue.empty():
-            front = queue.get()
-            for neighbor in tmp.graph[front]:
-                afd.add_edge(front, neighbor, tmp.graph[front][neighbor])
-                if neighbor not in hash:
-                    queue.put(neighbor)
-                    hash[neighbor] = True
-
-        return afd
-
-    def get_gotos(self):
-        closures = self.get_closures()
+        closure = self.__get_closure(start)
 
         simbolos = set(itertools.chain(*[prod.left+prod.right for prod in self.nodes.values()]))
         simbolos = [x for x in simbolos if x != '.']
 
-        gotos = {}
-        for key, value in closures.items():
+        queue = Queue(maxsize=1000)
+        queue.put(AfdNode(closure))
+        hash = {}
+        while not queue.empty():
+            front = queue.get()
             for simbolo in simbolos:
-                J = []
-                for prod in value:
-                    for neighbor in self.graph[prod]:
-                        if self.graph[prod][neighbor] == simbolo:
-                            J.extend(closures[neighbor])
-                if len(J):
-                    if hashlist(value) not in gotos:
-                        gotos[hashlist(value)] = {}
-                    gotos[hashlist(value)][hashlist(J)] = simbolo
-        return {
-            "gotos": gotos,
-            "start": hashlist(closures["E'->.E"])
-        }
+                tmp = []
+                for prod in front.closure:
+                    tmp += [neighbor for neighbor in self.graph[prod] if self.graph[prod][neighbor] == simbolo]
+                if len(tmp):
+                    goto = []
+                    tmpclosure = itertools.chain(*[self.__get_closure(x) for x in tmp])
+                    for node in tmpclosure:
+                        if node not in goto:
+                            goto.append(node)
+                    afdnode = AfdNode(goto)
+                    afd.add_edge(front, afdnode, simbolo)
+                    if str(afdnode) not in hash:
+                        queue.put(afdnode)
+                        hash[str(afdnode)] = True
 
-    def get_closures(self):
-        closures = {}
-        for node in self.graph:
-            closures[node] = self.__get_closure(node)
-        return closures
+        return afd
+
+    # def get_gotos(self):
+    #     closures = self.get_closures()
+    #
+    #     simbolos = set(itertools.chain(*[prod.left+prod.right for prod in self.nodes.values()]))
+    #     simbolos = [x for x in simbolos if x != '.']
+    #
+    #     gotos = {}
+    #     for key, value in closures.items():
+    #         for simbolo in simbolos:
+    #             J = []
+    #             for prod in value:
+    #                 for neighbor in self.graph[prod]:
+    #                     if self.graph[prod][neighbor] == simbolo:
+    #                         J.extend(closures[neighbor])
+    #             if len(J):
+    #                 if hashlist(value) not in gotos:
+    #                     gotos[hashlist(value)] = {}
+    #                 gotos[hashlist(value)][hashlist(J)] = simbolo
+    #     return {
+    #         "gotos": gotos,
+    #         "start": hashlist(closures["E'->.E"])
+    #     }
+
+    # def get_closures(self):
+    #     closures = {}
+    #     for node in self.graph:
+    #         closures[node] = self.__get_closure(node)
+    #     return closures
 
     def __get_closure(self, node):
         closure = [node]
@@ -160,5 +170,6 @@ for prod in prods_ext:
                     afnd.add_edge(prod, prod_transicao, "eps")
             i += 1
 
+afnd.view()
 afd = afnd.get_afd()
 afd.view()

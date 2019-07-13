@@ -1,5 +1,6 @@
 from graphviz import Digraph
 from queue import Queue
+from pprint import pprint
 import itertools
 # esse codigo eh uma implementacao do algoritmo do slide 5c do prof Mokarzel
 
@@ -27,6 +28,8 @@ class Graph:
     def __init__(self):
         self.graph = {}
         self.nodes = {}
+        self.state = "afnd"
+        self.simbolos = None
 
     def add_node(self, node):
         if str(node) not in self.graph:
@@ -49,8 +52,8 @@ class Graph:
         afd = Graph()
         closure = self.__get_closure(start)
 
-        simbolos = set(itertools.chain(*[prod.left+prod.right for prod in self.nodes.values()]))
-        simbolos = [x for x in simbolos if x != '.']
+        simbolos = set(itertools.chain(*[prod.left + prod.right for prod in self.nodes.values()]))
+        self.simbolos = [x for x in simbolos if x != '.']
 
         queue = Queue(maxsize=1000)
         queue.put(AfdNode(closure))
@@ -75,6 +78,7 @@ class Graph:
 
         self.graph = afd.graph
         self.nodes = afd.nodes
+        self.state = "afd"
 
     def __get_closure(self, node):
         closure = [node]
@@ -91,12 +95,35 @@ class Graph:
     def view(self):
         f = Digraph()
         f.attr(rankdir='LR', size='8,5')
-        self.rename_nodes()
-        for from_node in self.graph:
-            for to_node in self.graph[from_node]:
-                f.edge(str(self.nodes[from_node].idx), str(self.nodes[to_node].idx), label=self.graph[from_node][to_node])
+        if self.state == "afd":
+            for from_node in self.graph:
+                for to_node in self.graph[from_node]:
+                    f.edge(str(self.nodes[from_node].idx), str(self.nodes[to_node].idx), label=self.graph[from_node][to_node])
+        else:
+            for from_node in self.graph:
+                for to_node in self.graph[from_node]:
+                    f.edge(from_node, to_node, label=self.graph[from_node][to_node])
 
         f.view()
+
+    def get_slr_table(self):
+        if self.state == "afd":
+            table = {"acao": {}, "goto": {}}
+
+            self.rename_nodes()
+            max_idx = len(self.nodes)
+            for i in range(max_idx):
+                for simbolo in ["id", "+", "*", "(", ")", "$"]:
+                    if i not in table:
+                        table["acao"][i] = {}
+                    table["acao"][i][simbolo] = None
+
+            for node in self.graph:
+                for neighbor in self.graph[node]:
+                    if self.graph[node][neighbor] in ["id", "+", "*", "(", ")", "$"]:
+                        table["acao"][self.nodes[node].idx][self.graph[node][neighbor]] = "d " + str(self.nodes[neighbor].idx)
+
+            pprint(table)
 
 
 prods = [
@@ -146,6 +173,6 @@ for prod in prods_ext:
                     graph.add_edge(prod, prod_transicao, "eps")
             i += 1
 
-graph.view()
-graph.reduce_to_afd()
+# graph.reduce_to_afd()
+# graph.get_slr_table()
 graph.view()

@@ -112,7 +112,6 @@ class Graph:
                     f.edge(from_node, to_node, label=self.graph[from_node][to_node])
             f.render('log/questao_lista_afnd.gv', view=False)
 
-
     def get_slr_table(self):
         if self.state == "afd":
             table = {"acao": {}, "goto": {}}
@@ -157,10 +156,10 @@ class Graph:
                             table["goto"][self.nodes[node].idx] = {}
                         table["goto"][self.nodes[node].idx][self.graph[node][neighbor]] = str(self.nodes[neighbor].idx)
 
-            header = "; " + "; ".join(terminais) + "; " + "; ".join(naoterminais)
+            header = "; " + "; ".join(terminais) + "; $; " + "; ".join(naoterminais)
             print(header)
             for i in range(len(self.nodes)):
-                row = str(i) + "; " + "; ".join(table["acao"][i][terminal] for terminal in terminais) + "; " + "; ".join([table["goto"][i][naoterminal] for naoterminal in naoterminais])
+                row = str(i) + "; " + "; ".join(table["acao"][i][terminal] for terminal in terminais) + "; " + table["acao"][i]["$"] + "; " + "; ".join([table["goto"][i][naoterminal] for naoterminal in naoterminais])
                 print(row)
 
 

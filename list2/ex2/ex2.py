@@ -1,18 +1,14 @@
 from graphviz import Digraph
 from queue import Queue
-from pprint import pprint
 import itertools
 # esse codigo eh uma implementacao do algoritmo do slide 5c do prof Mokarzel
-
-
-def hashlist(list):
-    return ", ".join(sorted(list))
 
 
 class AfndNode:
     def __init__(self, left, right):
         self.left = left
         self.right = right
+        self.idx = None
 
     def __str__(self):
         return "".join(self.left) + "->" + "".join(self.right)
@@ -21,6 +17,7 @@ class AfndNode:
 class AfdNode:
     def __init__(self, closure):
         self.closure = sorted(closure)
+        self.idx = None
 
     def __str__(self):
         return ", ".join(self.closure)
@@ -41,7 +38,13 @@ class Graph:
         self.add_node(to_node)
         self.graph[str(from_node)][str(to_node)] = label
 
-    def get_afd(self):
+    def rename_nodes(self):
+        idx = 0
+        for key, value in self.nodes.items():
+            value.idx = idx
+            idx += 1
+
+    def reduce_to_afd(self):
         start = "E'->.E"
         afd = Graph()
         closure = self.__get_closure(start)
@@ -70,36 +73,8 @@ class Graph:
                         queue.put(afdnode)
                         hash[str(afdnode)] = True
 
-        return afd
-
-    # def get_gotos(self):
-    #     closures = self.get_closures()
-    #
-    #     simbolos = set(itertools.chain(*[prod.left+prod.right for prod in self.nodes.values()]))
-    #     simbolos = [x for x in simbolos if x != '.']
-    #
-    #     gotos = {}
-    #     for key, value in closures.items():
-    #         for simbolo in simbolos:
-    #             J = []
-    #             for prod in value:
-    #                 for neighbor in self.graph[prod]:
-    #                     if self.graph[prod][neighbor] == simbolo:
-    #                         J.extend(closures[neighbor])
-    #             if len(J):
-    #                 if hashlist(value) not in gotos:
-    #                     gotos[hashlist(value)] = {}
-    #                 gotos[hashlist(value)][hashlist(J)] = simbolo
-    #     return {
-    #         "gotos": gotos,
-    #         "start": hashlist(closures["E'->.E"])
-    #     }
-
-    # def get_closures(self):
-    #     closures = {}
-    #     for node in self.graph:
-    #         closures[node] = self.__get_closure(node)
-    #     return closures
+        self.graph = afd.graph
+        self.nodes = afd.nodes
 
     def __get_closure(self, node):
         closure = [node]
@@ -116,12 +91,13 @@ class Graph:
     def view(self):
         f = Digraph()
         f.attr(rankdir='LR', size='8,5')
-
+        self.rename_nodes()
         for from_node in self.graph:
             for to_node in self.graph[from_node]:
-                f.edge(from_node, to_node, label=self.graph[from_node][to_node])
+                f.edge(str(self.nodes[from_node].idx), str(self.nodes[to_node].idx), label=self.graph[from_node][to_node])
 
         f.view()
+
 
 prods = [
     AfndNode(["E'"], ["E"]),
@@ -139,7 +115,7 @@ for prod in prods:
         prods_ext.append(AfndNode(prod.left, prod.right[:i] + ["."] + prod.right[i:]))
     prods_ext.append(AfndNode(prod.left, prod.right + ["."]))
 
-afnd = Graph()
+graph = Graph()
 for prod in prods_ext:
     # primeiro tipo de transicao de AFND
     if prod.right[-1] != ".":
@@ -157,7 +133,7 @@ for prod in prods_ext:
                 i += 2
         new_prod = AfndNode(prod.left, next_prod_right)
 
-        afnd.add_edge(prod, new_prod, transicao)
+        graph.add_edge(prod, new_prod, transicao)
 
     # segundo tipo de transicao de AFND
     if prod.right[-1] != ".":
@@ -167,9 +143,9 @@ for prod in prods_ext:
             if prod.right[i] == ".":
                 prods_transicoes = [x for x in prods_ext if x.left[0] == prod.right[i+1] and x.right[0] == "." and str(prod) != str(x)]
                 for prod_transicao in prods_transicoes:
-                    afnd.add_edge(prod, prod_transicao, "eps")
+                    graph.add_edge(prod, prod_transicao, "eps")
             i += 1
 
-afnd.view()
-afd = afnd.get_afd()
-afd.view()
+graph.view()
+graph.reduce_to_afd()
+graph.view()

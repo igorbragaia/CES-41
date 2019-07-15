@@ -25,7 +25,7 @@ producoes = {
     "Eaux": [["eps"], ["+", "Expressao"]],
     "Termo": [["(", "Expressao", ")"], ["ID"], ["CTE"]]
 }
-#
+
 # # exemplo slide
 # terminais = ["(", ")", "id", "+", "*", "eps"]
 # nao_terminais = ["E", "T", "E'", "T'", "F"]

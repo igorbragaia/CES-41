@@ -1,0 +1,24 @@
+A->alfa#Prim(alfa)#Prim(A)#Seg(A)
+Prog->DeclsCmdComp#int real#int real#$
+Decls->DeclaracaoLDaux#int real#int real#{
+LDaux->eps#eps#eps int real#{
+LDaux->Decls#int real#eps int real#{
+Declaracao->TipoListId;#int real#int real#int real {
+Tipo->int#int#int real#ID
+Tipo->real#real#int real#ID
+ListId->IDLIaux#ID#ID#;
+LIaux->eps#eps#eps ,#;
+LIaux->,ListId#,#eps ,#;
+CmdComp->{ListCmd}#{#{#$ { ID }
+ListCmd->ComandoLCaux#{ ID#{ ID#}
+LCaux->eps#eps#eps { ID#}
+LCaux->ListCmd#{ ID#eps { ID#}
+Comando->CmdComp#{#{ ID#{ ID }
+Comando->CmdAtrib#ID#{ ID#{ ID }
+CmdAtrib->ID=Expressao;#ID#ID#{ ID }
+Expressao->TermoEaux#( ID CTE#( ID CTE#; )
+Eaux->eps#eps#eps +#; )
+Eaux->+Expressao#+#eps +#; )
+Termo->(Expressao)#(#( ID CTE#+ ; )
+Termo->ID#ID#( ID CTE#+ ; )
+Termo->CTE#CTE#( ID CTE#+ ; )

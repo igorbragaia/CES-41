@@ -1,0 +1,16 @@
+# ID# CTE# int# real# +# *# =# ;# ,# (# )# {# }# $
+Prog# # # Prog->DeclsCmdComp# Prog->DeclsCmdComp# # # # # # # # # # # 
+Decls# # # Decls->DeclaracaoLDaux# Decls->DeclaracaoLDaux# # # # # # # # # # # 
+LDaux# # # LDaux->Decls# LDaux->Decls# # # # # # # # LDaux->eps# # # 
+Declaracao# # # Declaracao->TipoListId;# Declaracao->TipoListId;# # # # # # # # # # # 
+Tipo# # # Tipo->int# Tipo->real# # # # # # # # # # # 
+ListId# ListId->IDLIaux# # # # # # # # # # # # # # 
+LIaux# # # # # # # # LIaux->eps# LIaux->,ListId# # # # # # 
+CmdComp# # # # # # # # # # # # CmdComp->{ListCmd}# # # 
+ListCmd# ListCmd->ComandoLCaux# # # # # # # # # # # ListCmd->ComandoLCaux# # # 
+LCaux# LCaux->ListCmd# # # # # # # # # # # LCaux->ListCmd# LCaux->eps# # 
+Comando# Comando->CmdAtrib# # # # # # # # # # # Comando->CmdComp# # # 
+CmdAtrib# CmdAtrib->ID=Expressao;# # # # # # # # # # # # # # 
+Expressao# Expressao->TermoEaux# Expressao->TermoEaux# # # # # # # # Expressao->TermoEaux# # # # # 
+Eaux# # # # # Eaux->+Expressao# # # Eaux->eps# # # Eaux->eps# # # # 
+Termo# Termo->ID# Termo->CTE# # # # # # # # Termo->(Expressao)# # # # # 

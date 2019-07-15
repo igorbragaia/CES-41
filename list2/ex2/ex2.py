@@ -3,6 +3,7 @@ from queue import Queue
 from pprint import pprint
 import itertools
 # esse codigo eh uma implementacao do algoritmo do slide 5c do prof Mokarzel
+fold = "questao_lista/"
 
 
 class AfndNode:
@@ -105,12 +106,12 @@ class Graph:
             for from_node in self.graph:
                 for to_node in self.graph[from_node]:
                     f.edge(str(self.nodes[from_node].idx), str(self.nodes[to_node].idx), label=self.graph[from_node][to_node])
-                    f.render('log/questao_lista_afd.gv', view=False)
+                    f.render(fold + 'afd.gv', view=False)
         else:
             for from_node in self.graph:
                 for to_node in self.graph[from_node]:
                     f.edge(from_node, to_node, label=self.graph[from_node][to_node])
-            f.render('log/questao_lista_afnd.gv', view=False)
+            f.render(fold + 'afnd.gv', view=False)
 
     def get_slr_table(self):
         if self.state == "afd":
@@ -156,11 +157,12 @@ class Graph:
                             table["goto"][self.nodes[node].idx] = {}
                         table["goto"][self.nodes[node].idx][self.graph[node][neighbor]] = str(self.nodes[neighbor].idx)
 
-            header = "; " + "; ".join(terminais) + "; $; " + "; ".join(naoterminais)
-            print(header)
-            for i in range(len(self.nodes)):
-                row = str(i) + "; " + "; ".join(table["acao"][i][terminal] for terminal in terminais) + "; " + table["acao"][i]["$"] + "; " + "; ".join([table["goto"][i][naoterminal] for naoterminal in naoterminais])
-                print(row)
+            with open(fold + 'tabela.csv', 'w') as f:
+                header = "; " + "; ".join(terminais) + "; $; " + "; ".join(naoterminais) + "\n"
+                f.write(header)
+                for i in range(len(self.nodes)):
+                    row = str(i) + "; " + "; ".join(table["acao"][i][terminal] for terminal in terminais) + "; " + table["acao"][i]["$"] + "; " + "; ".join([table["goto"][i][naoterminal] for naoterminal in naoterminais]) + "\n"
+                    f.write(row)
 
 
 # prods = [
@@ -201,6 +203,7 @@ prods = [
 terminais = ["@", "+", "*", "(", ")", "a", ","]
 naoterminais = ["E", "T", "F", "P", "L"]
 seguintes = {
+    "E'": ['$'],
     'E': ['$', '+', ')', ','],
     'F': ['*', '$', '+', ')', ','],
     'L': [')', ','],

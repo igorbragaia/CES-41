@@ -26,21 +26,22 @@ from pprint import pprint
 #     "Termo": [["(", "Expressao", ")"], ["ID"], ["CTE"]]
 # }
 
-# # exemplo slide
-terminais = ["(", ")", "id", "+", "*"]
-nao_terminais = ["E", "T", "E'", "T'", "F"]
-producoes = {
-    "E": [["T", "E'"]],
-    "T": [["F", "T'"]],
-    "E'": [["+", "T", "E'"], ["eps"]],
-    "T'": [["*", "F", "T'"], ["eps"]],
-    "F": [["(", "E", ")"], ["id"]]
-}
-
+# # # exemplo slide
+# terminais = ["(", ")", "id", "+", "*"]
+# nao_terminais = ["E", "T", "E'", "T'", "F"]
+# producoes = {
+#     "E": [["T", "E'"]],
+#     "T": [["F", "T'"]],
+#     "E'": [["+", "T", "E'"], ["eps"]],
+#     "T'": [["*", "F", "T'"], ["eps"]],
+#     "F": [["(", "E", ")"], ["id"]]
+# }
+#
 # questao 2 lista 2
 terminais = ["@", "+", "*", "(", ")", "a", ","]
 nao_terminais = ["E", "T", "F", "P", "L"]
 producoes = {
+    "E'": [["E"]],
     "E": [["E", "+", "T"], ["T"]],
     "T": [["T", "*", "F"], ["F"]],
     "F": [["P", "@", "F"], ["P"]],
@@ -48,10 +49,18 @@ producoes = {
     "L": [["L", ",", "E"], ["E"]]
 }
 
+# # questao 2 lista 2 - exemplo slide
+# terminais = ["+", "*", "(", ")", "id"]
+# nao_terminais = ["E", "T", "F"]
+# producoes = {
+#     "E'": [["E"]],
+#     "E": [["E", "+", "T"], ["T"]],
+#     "T": [["T", "*", "F"], ["F"]],
+#     "F": [["(", "E", ")"], ["id"]],
+# }
+
 primeiros = {}
 seguintes = {}
-
-
 
 
 # PRIMEIROS

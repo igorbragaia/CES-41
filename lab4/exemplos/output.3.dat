@@ -1,0 +1,64 @@
+
+/* Programa para contar as ocorrencias das
+palavras de um texto */
+program AnaliseDeTexto{
+
+/* Variaveis globais */
+global:
+	char nomes[50, 10], palavra[10], p3[2];
+	int ntab, nocorr[50];
+	char c;
+	logic fim;
+functions:
+
+/* Funcao para procurar uma palavra na tabela de palavras */
+int ProcuraX(){
+local :
+	int i;
+	int i
+
+***** Declaracao Repetida: i *****
+
+;
+statements:
+	i<-50;
+	return i;
+}
+
+/* Fim da funcao Procura */
+}
+
+
+   TABELA  DE  SIMBOLOS => Classe: (cadeia, tid, tvar, inic, ref)
+
+Classe 2:
+  (p3, IDVAR_GLOBAL, CARACTERE, 0, 0)
+Classe 7:
+  (c, IDVAR_GLOBAL, CARACTERE, 0, 0)
+  (ntab, IDVAR_GLOBAL, INTEIRO, 0, 0)
+  (palavra, IDVAR_GLOBAL, CARACTERE, 0, 0)
+Classe 15:
+  (ProcuraX, IDVAR_GLOBAL)
+  (nocorr, IDVAR_GLOBAL, INTEIRO, 0, 0)
+Classe 17:
+  (fim, IDVAR_GLOBAL, LOGICO, 0, 0)
+  (nomes, IDVAR_GLOBAL, CARACTERE, 0, 0)
+Classe 22:
+  (AnaliseDeTexto, IDPROG)
+
+
+/*************************************************************/
+   SIMBOLOS NAO INICIALIZADOS E NAO REFERENCIADOS:
+
+p3, c, ntab, palavra, nocorr, fim, nomes, 
+/*************************************************************/
+   SIMBOLOS NAO INICIALIZADOS MAS REFERENCIADOS:
+
+
+/*************************************************************/
+   SIMBOLOS INICIALIZADOS MAS NÃO REFERENCIADOS:
+
+
+/*************************************************************/
+
+/* Fim do programa AnaliseDeTexto */

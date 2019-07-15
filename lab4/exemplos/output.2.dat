@@ -1,0 +1,79 @@
+
+/* Programa para contar as ocorrencias das
+palavras de um texto */
+program AnaliseDeTexto{
+
+/* Variaveis globais */
+global:
+	char nomes[50, 10], palavra[10], p3[2];
+	int ntab, nocorr[50];
+	char c;
+	logic fim;
+functions:
+
+/* Funcao para procurar uma palavra na tabela de palavras */
+int ProcuraX(){
+local :
+	int i;
+statements:
+	ntab<-2;
+	i<-50;
+	c<-fim;
+
+
+***** Identificador de Tipo Inadequado: Tipo do lado esquerdo e lado direito incoerentes na atribuicao! *****
+
+	while(!achou
+
+***** Identificador Nao Declarado: achou *****
+
+ & sup
+
+***** Identificador Nao Declarado: sup *****
+
+ >= inf
+
+***** Identificador Nao Declarado: inf *****
+
+){
+	}
+	return i;
+}
+
+/* Fim da funcao Procura */
+}
+
+
+   TABELA  DE  SIMBOLOS => Classe: (cadeia, tid, tvar, inic, ref)
+
+Classe 2:
+  (p3, IDVAR_GLOBAL, CARACTERE, 0, 0)
+Classe 7:
+  (c, IDVAR_GLOBAL, CARACTERE, 1, 1)
+  (ntab, IDVAR_GLOBAL, INTEIRO, 1, 1)
+  (palavra, IDVAR_GLOBAL, CARACTERE, 0, 0)
+Classe 15:
+  (ProcuraX, IDVAR_GLOBAL)
+  (nocorr, IDVAR_GLOBAL, INTEIRO, 0, 0)
+Classe 17:
+  (fim, IDVAR_GLOBAL, LOGICO, 0, 1)
+  (nomes, IDVAR_GLOBAL, CARACTERE, 0, 0)
+Classe 22:
+  (AnaliseDeTexto, IDPROG)
+
+
+/*************************************************************/
+   SIMBOLOS NAO INICIALIZADOS E NAO REFERENCIADOS:
+
+p3, palavra, nocorr, nomes, 
+/*************************************************************/
+   SIMBOLOS NAO INICIALIZADOS MAS REFERENCIADOS:
+
+fim, 
+/*************************************************************/
+   SIMBOLOS INICIALIZADOS MAS NÃO REFERENCIADOS:
+
+
+/*************************************************************/
+
+/* Fim do programa AnaliseDeTexto */

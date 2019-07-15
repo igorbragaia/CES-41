@@ -1,0 +1,28 @@
+/* Programa para contar as ocorrencias das
+palavras de um texto */
+
+program AnaliseDeTexto {
+
+/* Variaveis globais */
+
+global:
+char nomes[50,10], palavra[10], p3[2];
+int ntab, nocorr[50];
+char c; logic fim;
+
+functions:
+
+/* Funcao para procurar uma palavra na tabela de palavras */
+
+int ProcuraX () {
+
+local:
+int i;
+int i;
+statements:
+i<-50;
+return i;
+
+} /* Fim da funcao Procura */
+
+} /* Fim do programa AnaliseDeTexto */

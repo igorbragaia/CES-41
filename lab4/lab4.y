@@ -378,7 +378,7 @@ int hash (char *cadeia) {
 
 void ImprimeTabSimb () {
 	int i; simbolo s;
-	printf ("\n\n   TABELA  DE  SIMBOLOS:\n\n");
+	printf ("\n\n   TABELA  DE  SIMBOLOS => Classe: (cadeia, tid, tvar, inic, ref)\n\n");
 	for (i = 0; i < NCLASSHASH; i++)
 		if (tabsimb[i]) {
 			printf ("Classe %d:\n", i);

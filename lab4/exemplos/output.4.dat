@@ -1,0 +1,48 @@
+program AnaliseDeTexto{
+global:
+	int ntab;
+functions:
+int ntab(){
+local :
+	int x;
+statements:
+	i
+
+***** Identificador Nao Declarado: i *****
+
+<-50;
+
+
+***** Identificador de Tipo Inadequado: Tipo do lado esquerdo e lado direito incoerentes na atribuicao! *****
+
+	return i
+
+***** Identificador Nao Declarado: i *****
+
+;
+}
+}
+
+
+   TABELA  DE  SIMBOLOS => Classe: (cadeia, tid, tvar, inic, ref)
+
+Classe 7:
+  (ntab, IDVAR_GLOBAL)
+  (ntab, IDVAR_GLOBAL, INTEIRO, 0, 0)
+Classe 22:
+  (AnaliseDeTexto, IDPROG)
+
+
+/*************************************************************/
+   SIMBOLOS NAO INICIALIZADOS E NAO REFERENCIADOS:
+
+ntab, 
+/*************************************************************/
+   SIMBOLOS NAO INICIALIZADOS MAS REFERENCIADOS:
+
+
+/*************************************************************/
+   SIMBOLOS INICIALIZADOS MAS NÃO REFERENCIADOS:
+
+
+/*************************************************************/

@@ -1,4 +1,4 @@
-flex lab3.l
-yacc lab3.y
-gcc y.tab.c main.c yyerror.c -o lab3 -lfl
-./lab3 < input1.dat
+flex lab4.l
+yacc lab4.y
+gcc y.tab.c main.c yyerror.c -o lab4 -lfl
+./lab4 < input.dat

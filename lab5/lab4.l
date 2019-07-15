@@ -1,6 +1,5 @@
 %{
 #include 	<string.h>
-
 void comentario();
 %}
 delim				[ \t\n\r]
@@ -57,52 +56,64 @@ write				{return WRITE;}
 			        strcpy (yylval.string, yytext);
 			        return STRING;
 			    	}
+
 "||"				{return OR;}
 "&&"				{return AND;}
 "!"					{return NOT;}
 "~"					{return NEG;}
 "<"					{
   						yylval.atr = RELOP_1;
+						atr = RELOP_1;
   						return RELOP;
   					}
 "<="				{
   						yylval.atr = RELOP_2;
+						atr = RELOP_2;
   						return RELOP;
   					}
 ">"					{
   						yylval.atr = RELOP_3;
+						atr = RELOP_3;
   						return RELOP;
   					}
 ">="				{
   						yylval.atr = RELOP_4;
+						atr = RELOP_4;
   						return RELOP;
   					}
 "="					{
   						yylval.atr = RELOP_5;
+						atr = RELOP_5;
   						return RELOP;
   					}
 "!="				{
   						yylval.atr = RELOP_6;
+						atr = RELOP_6;
   						return RELOP;
   					}
 "+"					{
   						yylval.atr = ADOP_1;
+						atr = ADOP_1;
   						return ADOP;
   					}
 "-"					{
   						yylval.atr = ADOP_2;
+						atr = ADOP_2;
   						return ADOP;
   					}
 "*"					{
   						yylval.atr = MULTOP_1;
+						atr = MULTOP_1;
   						return MULTOP;
   					}
 "/"					{
   						yylval.atr = MULTOP_2;
+						atr = MULTOP_2;
   						return MULTOP;
   					}
 "%"					{
   						yylval.atr = MULTOP_3;
+						atr = MULTOP_3;
   						return MULTOP;
   					}
 "<"-				{return ASSIGN;}
@@ -123,7 +134,7 @@ write				{return WRITE;}
 void comentario () {
 	char c;
 	int estado = 1;
-	printf("Comentario:\n/*");
+	printf("\n/*");
 	while (estado != 3) {
 		c = input ();
 		printf("%c", c);

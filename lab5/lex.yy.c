@@ -536,8 +536,8 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "lab3.l"
-#line 2 "lab3.l"
+#line 1 "lab4.l"
+#line 2 "lab4.l"
 #include 	<string.h>
 void comentario();
 #line 544 "lex.yy.c"
@@ -758,7 +758,7 @@ YY_DECL
 		}
 
 	{
-#line 14 "lab3.l"
+#line 14 "lab4.l"
 
 #line 764 "lex.yy.c"
 
@@ -819,128 +819,128 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 15 "lab3.l"
+#line 15 "lab4.l"
 {comentario();}
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 16 "lab3.l"
+#line 16 "lab4.l"
 {;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 17 "lab3.l"
+#line 17 "lab4.l"
 {return CALL;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 18 "lab3.l"
+#line 18 "lab4.l"
 {return CHAR;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 19 "lab3.l"
+#line 19 "lab4.l"
 {return DO;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 20 "lab3.l"
+#line 20 "lab4.l"
 {return ELSE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 21 "lab3.l"
+#line 21 "lab4.l"
 {return FALSE;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 22 "lab3.l"
+#line 22 "lab4.l"
 {return FLOAT;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 23 "lab3.l"
+#line 23 "lab4.l"
 {return FOR;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 24 "lab3.l"
+#line 24 "lab4.l"
 {return FUNCTIONS;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 25 "lab3.l"
+#line 25 "lab4.l"
 {return GLOBAL;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 26 "lab3.l"
+#line 26 "lab4.l"
 {return IF;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 27 "lab3.l"
+#line 27 "lab4.l"
 {return INT;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 28 "lab3.l"
+#line 28 "lab4.l"
 {return LOCAL;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 29 "lab3.l"
+#line 29 "lab4.l"
 {return LOGIC;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 30 "lab3.l"
+#line 30 "lab4.l"
 {return MAIN;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 31 "lab3.l"
+#line 31 "lab4.l"
 {return PROGRAM;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 32 "lab3.l"
+#line 32 "lab4.l"
 {return READ;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 33 "lab3.l"
+#line 33 "lab4.l"
 {return RETURN;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 34 "lab3.l"
+#line 34 "lab4.l"
 {return STATEMENTS;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 35 "lab3.l"
+#line 35 "lab4.l"
 {return TRUE;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 36 "lab3.l"
+#line 36 "lab4.l"
 {return VOID;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 37 "lab3.l"
+#line 37 "lab4.l"
 {return WHILE;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 38 "lab3.l"
+#line 38 "lab4.l"
 {return WRITE;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 39 "lab3.l"
+#line 39 "lab4.l"
 {
   						strcpy (yylval.string, yytext);
   						return ID;
@@ -948,7 +948,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 43 "lab3.l"
+#line 43 "lab4.l"
 {
   						yylval.valor = atoi(yytext);
   						return INTCT;
@@ -956,7 +956,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 47 "lab3.l"
+#line 47 "lab4.l"
 {
   						strcpy (yylval.string, yytext);
   						return CHARCT;
@@ -964,7 +964,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 51 "lab3.l"
+#line 51 "lab4.l"
 {
   						yylval.valreal = atof(yytext);
   						return FLOATCT;
@@ -973,7 +973,7 @@ YY_RULE_SETUP
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 55 "lab3.l"
+#line 55 "lab4.l"
 {
 			        strcpy (yylval.string, yytext);
 			        return STRING;
@@ -981,165 +981,176 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 59 "lab3.l"
+#line 60 "lab4.l"
 {return OR;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 60 "lab3.l"
+#line 61 "lab4.l"
 {return AND;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 61 "lab3.l"
+#line 62 "lab4.l"
 {return NOT;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 62 "lab3.l"
+#line 63 "lab4.l"
 {return NEG;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 63 "lab3.l"
+#line 64 "lab4.l"
 {
   						yylval.atr = RELOP_1;
+						atr = RELOP_1;
   						return RELOP;
   					}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 67 "lab3.l"
+#line 69 "lab4.l"
 {
   						yylval.atr = RELOP_2;
+						atr = RELOP_2;
   						return RELOP;
   					}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 71 "lab3.l"
+#line 74 "lab4.l"
 {
   						yylval.atr = RELOP_3;
+						atr = RELOP_3;
   						return RELOP;
   					}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 75 "lab3.l"
+#line 79 "lab4.l"
 {
   						yylval.atr = RELOP_4;
+						atr = RELOP_4;
   						return RELOP;
   					}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 79 "lab3.l"
+#line 84 "lab4.l"
 {
   						yylval.atr = RELOP_5;
+						atr = RELOP_5;
   						return RELOP;
   					}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 83 "lab3.l"
+#line 89 "lab4.l"
 {
   						yylval.atr = RELOP_6;
+						atr = RELOP_6;
   						return RELOP;
   					}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 87 "lab3.l"
+#line 94 "lab4.l"
 {
   						yylval.atr = ADOP_1;
+						atr = ADOP_1;
   						return ADOP;
   					}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 91 "lab3.l"
+#line 99 "lab4.l"
 {
   						yylval.atr = ADOP_2;
+						atr = ADOP_2;
   						return ADOP;
   					}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 95 "lab3.l"
+#line 104 "lab4.l"
 {
   						yylval.atr = MULTOP_1;
+						atr = MULTOP_1;
   						return MULTOP;
   					}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 99 "lab3.l"
+#line 109 "lab4.l"
 {
   						yylval.atr = MULTOP_2;
+						atr = MULTOP_2;
   						return MULTOP;
   					}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 103 "lab3.l"
+#line 114 "lab4.l"
 {
   						yylval.atr = MULTOP_3;
+						atr = MULTOP_3;
   						return MULTOP;
   					}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 107 "lab3.l"
+#line 119 "lab4.l"
 {return ASSIGN;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 108 "lab3.l"
+#line 120 "lab4.l"
 {return OPPAR;}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 109 "lab3.l"
+#line 121 "lab4.l"
 {return CLPAR;}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 110 "lab3.l"
+#line 122 "lab4.l"
 {return OPBRAK;}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 111 "lab3.l"
+#line 123 "lab4.l"
 {return CLBRAK;}
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 112 "lab3.l"
+#line 124 "lab4.l"
 {return OPBRACE;}
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 113 "lab3.l"
+#line 125 "lab4.l"
 {return CLBRACE;}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 114 "lab3.l"
+#line 126 "lab4.l"
 {return SCOLON;}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 115 "lab3.l"
+#line 127 "lab4.l"
 {return COMMA;}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 116 "lab3.l"
+#line 128 "lab4.l"
 {return COLON;}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 117 "lab3.l"
+#line 129 "lab4.l"
 {
   						yylval.carac = yytext[0];
   						return INVAL;
@@ -1147,10 +1158,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 121 "lab3.l"
+#line 133 "lab4.l"
 ECHO;
 	YY_BREAK
-#line 1154 "lex.yy.c"
+#line 1165 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2155,7 +2166,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 121 "lab3.l"
+#line 133 "lab4.l"
 
 void comentario () {
 	char c;
